@@ -1,0 +1,61 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+{% load custom_participant_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist_research_list" %}">{% trans "Research List" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Keep track of money only" %}</a>
+                </li>
+            </ul>
+        </div>
+
+        {% if not research.is_paid %}
+            <ul class="messages">
+                <li class="left">
+                    <form action="" method="POST" class="form-horizontal">
+                        {% csrf_token %}
+                        <input type="hidden" name="research_id" value="{{ research.id }}">
+                        <div class="control-group">
+                            <label class="control-label" for="id_restrictions">
+                                Required to pay:
+                            </label>
+
+                            <div class="controls">
+                                <input name="amount" type="text" value="{{ amount }}" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <button type="submit" class="btn btn-satgreen">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="message" style="margin-left: 200px;background: #d1e5f8;">
+                        <span class="caret" style="border-right: 7px solid #d1e5f8;"></span>
+                        <span class="name">{% trans "Notification" %}</span>
+                        <p>{% trans "Total amount" %}: {{ research.total_credit }}</p>
+                        <p>{% trans "Balance" %}: {{ request.user.userprofile.available_balance }}</p>
+                        <span class="time">
+                        </span>
+                    </div>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

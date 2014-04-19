@@ -1,0 +1,60 @@
+from django.conf.urls import patterns, url
+from django.core.urlresolvers import reverse_lazy
+
+from userprofile.views import USER_TYPE_DEPARTMENT
+from .forms import DepartmentBasicInfoForm
+
+urlpatterns = patterns('',
+                       url(r'^department/$', 'department.views.department', name='department'),
+                       url(r'^department/signup/$', 'userprofile.views.department_signup', name='department_signup',
+                           kwargs={
+                               'success_url': reverse_lazy('department_basic_info'),
+                               'user_type': USER_TYPE_DEPARTMENT,
+                           }
+                       ),
+                       url(r'^department/basicinfo/$', 'userprofile.views.userprofile_basic_info',
+                           name='department_basic_info',
+                           kwargs={
+                               'form_class': DepartmentBasicInfoForm,
+                               'success_url': reverse_lazy('department'),
+                               'user_type': USER_TYPE_DEPARTMENT,
+                               'template': 'userprofile/basic_info.html',
+                           }
+                       ),
+                       url(r'^department/invite/participant/$', 'department.views.department_invite_participant',
+                           name='department_invite_participant'),
+                       url(r'^department/invite/scientist/$', 'department.views.department_invite_scientist',
+                           name='department_invite_scientist'),
+                       url(r'^department/participant_list/$', 'department.views.department_participant_list',
+                           name='department_participant_list'),
+                       url(r'^department/scientist_list/$', 'department.views.department_scientist_list',
+                           name='department_scientist_list'),
+                       url(r'^department/scheme/$', 'department.views.department_scheme',
+                           name='department_scheme'),
+                       url(r'^department/(?P<scheme_id>\d+)/choose_location/$',
+                           'department.views.choose_scheme_location',
+                           name='choose_scheme_location'),
+                       url(r'^department/(?P<scheme_id>\d+)/add_location/$', 'department.views.add_scheme_location',
+                           name='add_scheme_location'),
+                       url(r'^department/scheme/remove_all_participant/$', 'department.views.remove_all_participant',
+                           name='remove_all_participant'),
+                       url(r'^department/scheme/remove_all_scientist/$', 'department.views.remove_all_scientist',
+                           name='remove_all_scientist'),
+                       url(r'^department/(?P<scheme_id>\d+)/choose_coordinator/$',
+                           'department.views.choose_coordinator',
+                           name='choose_coordinator'),
+                       url(r'^department/choose_scientist/$', 'department.views.choose_scientist',
+                           name='choose_scientist'),
+                       url(r'^department/delete_scientist/$', 'department.views.delete_scientist',
+                           name='delete_scientist'),
+                       url(r'^department/assign_credit/$', 'department.views.assign_credit',
+                           name='assign_credit'),
+                       url(r'^department/choose_participant/$', 'department.views.choose_participant',
+                           name='choose_participant'),
+                       url(r'^department/delete_participant/$', 'department.views.delete_participant',
+                           name='delete_participant'),
+                       url(r'^department/set_required_credit/$', 'department.views.set_required_credit',
+                           name='set_required_credit'),
+                       url(r'^api/scientists/$', 'department.views.api_scientists', name='api_scientists'),
+                       url(r'^api/participants/$', 'department.views.api_participants', name='api_participants'),
+)

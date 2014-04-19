@@ -1,0 +1,35 @@
+{% load i18n %}
+
+<div class="row-fluid research">
+    <div class="box box-color box-bordered green">
+        <div class="box-title">
+            <h3>
+                <i class="icon-tint"></i>
+                {{ scheme.credit_scheme.name }}
+            </h3>
+
+            <div class="actions">
+                <a href="#" class="btn btn-mini content-slideUp"><i class="icon-angle-down"></i></a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div class="span6">
+                <h6>{% trans "Name" %}: <a
+                        href="{% url "scientist_scheme_detail" scheme.id %}">{{ scheme.credit_scheme.name }}</a></h6>
+
+                <p>{% trans "Duration" %}: {{ scheme.credit_scheme.start|date:"Y-m-d" }}
+                    - {{ scheme.credit_scheme.end|date:"Y-m-d" }}</p>
+
+                <p>{% trans "Total Credit" %}: {{ scheme.credit_scheme.total_credit }}</p>
+            </div>
+
+            <div class="span6">
+                <p>{% trans "Department" %}: {{ scheme.credit_scheme.department }}</p>
+
+                <p>{% trans "Location" %}: {{ scheme.credit_scheme.university_department }}</p>
+
+                <p>{% trans "Remain Credit" %}: {{ scheme.credit_scheme.remain_credit }}</p>
+            </div>
+        </div>
+    </div>
+</div>

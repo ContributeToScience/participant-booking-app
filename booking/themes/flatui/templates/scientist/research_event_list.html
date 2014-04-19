@@ -1,0 +1,507 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+{% load bootstrap_toolkit %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist_research_list" %}">{% trans "Research List" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Manage events" %}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="row-fluid">
+            <table id="scheme_table" class="table table-nomargin">
+                <tbody>
+                <tr>
+                    <td>{% trans "Name" %}:</td>
+                    <td>{{ research.name }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Location" %}:</td>
+                    <td>{{ research.location.address }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Duration" %}:</td>
+                    <td>
+                        <div id="label_duration">
+                            <span id="id_label_start">{{ research.start|date:'Y-m-d H:i:s' }}</span> - <span
+                                id="id_label_end">{{ research.end|date:'Y-m-d H:i:s' }}</span>
+                            <a id="edit_duration" href="#" style="font-size: 15px;"><i class="icon-edit"></i></a>
+                        </div>
+                        <div id="input_duration" class="input_duration">
+                            <input class="datetimepicker" data-date-format="yyyy-mm-dd hh:ii:ss"
+                                   data-rule-dateiso="true" value="{{ research.start|date:'Y-m-d H:i:s' }}"
+                                   data-rule-required="true" id="id_input_start" type="text"
+                                   placeholder="{% trans "Start time" %}">
+                            <input class="datetimepicker" data-date-format="yyyy-mm-dd hh:ii:ss"
+                                   data-rule-dateiso="true" value="{{ research.end|date:'Y-m-d H:i:s' }}"
+                                   data-rule-required="true" id="id_input_end" type="text"
+                                   placeholder="{% trans "End time" %}">
+                            <a id="save_duration" href="#" style="font-size: 15px;"><i class="icon-save"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Description" %}:</td>
+                    <td>{{ research.currency }} {{ research.remuneration }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Time/Experiment" %}:</td>
+                    <td>{{ research.default_event_duration }} {% trans "minutes" %}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <input id="research_id" type="hidden" value="{{ research.id }}"/>
+    <input id="research_start" type="hidden" value="{{ research.start|date:"Y-m-d" }}"/>
+    <input id="research_end" type="hidden" value="{{ research.end|date:"Y-m-d" }}"/>
+    <input id="default_event_duration" type="hidden" value="{{ research.default_event_duration }}"/>
+    <input id="clipboard" type="hidden" value="">
+    <input id="event_focus" type="hidden" value="">
+
+    <div class="contextMenu" id="contextMenu">
+        <ul>
+            <li id="edit"><i class="icon-edit"></i> {% trans "Edit" %}</li>
+            <li id="copy"><i class="icon-copy"></i> {% trans "Copy" %}</li>
+            <li id="delete"><i class="icon-remove"></i> {% trans "Delete" %}</li>
+        </ul>
+    </div>
+
+    <div class="contextMenu" id="contextMenu2">
+        <ul>
+            <li id="paste"><i class="icon-edit"></i> {% trans "Paste" %}</li>
+        </ul>
+    </div>
+
+    <div id="event_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="event_modal_title"
+         aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 id="event_modal_title"></h4>
+        </div>
+        <div class="modal-body">
+            <div class="row-fluid">
+                <div class="span4">{% trans "Number of Participants:" %}</div>
+                <div id="id_number" class="span8">
+                    <a id="current_num" href="#" date-evnet-id="">0</a> / <span id="total_num">0</span>
+                </div>
+            </div>
+
+            <div class="control-group required">
+                <label class="control-label" for="id_start">{% trans "Start Date" %}</label>
+
+                <div class="controls">
+                    <input class="datetimepicker" data-date-format="yyyy-mm-dd hh:ii:ss" data-rule-dateiso="true"
+                           data-rule-required="true" id="id_start" name="start" type="text">
+                    <span for="id_start" class="help-block error"></span>
+                </div>
+            </div>
+
+            <div class="control-group required">
+                <label class="control-label" for="id_end">{% trans "End Date" %}</label>
+
+                <div class="controls">
+                    <input class="datetimepicker" data-date-format="yyyy-mm-dd hh:ii:ss" data-rule-dateiso="true"
+                           data-rule-required="true" id="id_end" name="end" type="text">
+                    <span for="id_end" class="help-block error"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input id="event_id" type="hidden" value="">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
+            <button id="btn_save" class="btn btn-primary">{% trans "Save changes" %}</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/datetimepicker/datetimepicker.css">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/plugins/jquery-contextmenu/jquery.contextMenu.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins/datetimepicker/bootstrap-datetimepicker.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.datetimepicker').datetimepicker();
+
+            $(document).on("keydown", function (e) {
+                if (e.keyCode == 46) {
+                    var event_id = $("#event_focus").val();
+                    delete_event(event_id);
+                }
+            });
+
+            $("#edit_duration").bind("click", function(){
+                $("#label_duration").hide();
+                $("#input_duration").show();
+            });
+
+            $("#save_duration").bind("click", function(){
+                var research_id = $("#research_id").val();
+                var start = $("#id_input_start").val();
+                var end = $("#id_input_end").val();
+
+                $.ajax({
+                    url: "/scientist/research/update_duration/",
+                    type: "POST",
+                    dataType: "json",
+                    async: true,
+                    data: {"research_id": research_id, "start": start, "end": end},
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                    },
+                    success: function (result) {
+                        if (result.status == 'success') {
+                            $("#id_label_start").html(start);
+                            $("#id_label_end").html(end);
+                            $("#input_duration").hide();
+                            $("#label_duration").show();
+                        }
+                    }
+                });
+            });
+
+            $("#current_num").bind("click", function () {
+                var event_id = $(this).attr("data-event-id");
+                if (event_id) {
+                    window.open("/scientist/research/event/" + event_id + "/participants/");
+                }
+            });
+
+            $("#btn_save").bind("click", function () {
+                var research_id = $("#research_id").val();
+                var event_id = $("#event_id").val();
+                var start = date_to_string($.fullCalendar.parseDate($("#id_start").val()));
+                var end = date_to_string($.fullCalendar.parseDate($("#id_end").val()));
+
+                clean_error();
+
+                if (!start || start == "") {
+                    add_error("id_start", "start date can not to empty");
+                } else if (!end || end == "") {
+                    add_error("id_end", "end date can not to empty");
+                } else {
+                    $.ajax({
+                        url: "/scientist/research/create_event/",
+                        type: "POST",
+                        dataType: "json",
+                        async: true,
+                        data: {"research_id": research_id, "start": start, "end": end, "event_id": event_id},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            if (result.status == 'fail') {
+                                add_error(result.target, result.reason);
+                            } else {
+                                $('#event_modal').modal("hide");
+                                $("#calendar").fullCalendar("refetchEvents");
+                            }
+                        }
+                    });
+                }
+            });
+
+            var research_start = $.fullCalendar.parseDate($("#research_start").val());
+
+            $('#calendar').fullCalendar({
+                header: {
+                    left: "prev,next",
+                    center: "title",
+                    right: "month,agendaWeek,agendaDay"
+                },
+                firstHour:8,
+                height: 500,
+                defaultView: "agendaWeek",
+                editable: true,
+                selectable: true,
+                allDayDefault: false,
+                ignoreTimezone: false,
+                year: research_start.getFullYear(),
+                month: research_start.getMonth(),
+                date: research_start.getDate(),
+                events: function (start, end, callback) {
+                    var events = [];
+                    $.ajax({
+                        url: "/api/scientist/events/",
+                        type: "POST",
+                        dataType: "json",
+                        async: true,
+                        data: {"research_id": $("#research_id").val()},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            $.each(result, function (index, obj) {
+                                events.push({
+                                    id: obj.id,
+                                    title: obj.title,
+                                    description: obj.description,
+                                    start: obj.start,
+                                    end: obj.end,
+                                    total_participant_num: obj.total_participant_num,
+                                    join_participant_num: obj.join_participant_num
+                                });
+                            });
+                            callback(events);
+                        }
+                    });
+                },
+                dayRender: function (date, cell) {
+                    $(cell).bind("mouseenter", function () {
+                        var research_start = new Date($("#research_start").val() + " 00:00:00");
+                        var research_end = new Date($("#research_end").val() + " 00:00:00");
+                        var event_start = new Date(date_to_string(date, "None"));
+                        var event_end = new Date(date_to_string(date, "None"));
+                        event_end.setSeconds(event_end.getSeconds() + parseInt($("#default_event_duration").val()) * 60);
+
+                        if (event_start >= research_start && event_end <= research_end) {
+                            $(this).tooltip({
+                                title: "Click once to add a slot. Click a slot and press delete to delete",
+                                container: "body"
+                            });
+                        } else {
+                            $(this).css("cursor", "help");
+                        }
+                    });
+
+                    $(cell).contextMenu("contextMenu2", {
+                        bindings: {
+                            'paste': function (t) {
+                                var event_id = $("#clipboard").val();
+                                var research_id = $("#research_id").val();
+
+                                if (event_id && event_id != "" && event_id != "undefined") {
+                                    var start = date_to_string(new Date(date));
+
+                                    $.ajax({
+                                        url: "/scientist/research/copy_event/",
+                                        type: "POST",
+                                        dataType: "json",
+                                        async: true,
+                                        data: {"event_id": event_id, "research_id": research_id, "start": start},
+                                        beforeSend: function (xhr) {
+                                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                                        },
+                                        success: function (result) {
+                                            if (result.status == 'fail') {
+                                                alert(result.reason);
+                                            } else {
+                                                $("#calendar").fullCalendar("refetchEvents");
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        },
+                        onShowMenu: function (event, menu) {
+                            var event_id = $("#clipboard").val();
+                            if (!event_id || event_id == "undefined" || event_id == "") {
+                                $(menu).find("li").css({"color": "#666", "cursor": "text"})
+                                        .unbind("mouseenter mouseleave");
+                            }
+                            return menu;
+                        }
+                    });
+                },
+                dayClick: function (date, allDay, jsEvent, view) {
+                    var date = new Date(date);
+                    var start = $.fullCalendar.formatDate(date, "yyyy-MM-dd HH:mm:ss");
+                    date.setSeconds(date.getSeconds() + parseInt($("#default_event_duration").val()) * 60);
+                    var end = $.fullCalendar.formatDate(date, "yyyy-MM-dd HH:mm:ss");
+                    clean_error();
+                    $("#id_start").val(start);
+                    $("#id_end").val(end);
+                    $("#event_id").val("");
+                    $("#event_modal_title").html("Create event");
+                    $("#id_number").hide();
+                    //$("#event_modal").modal();
+                    $("#btn_save").trigger("click");
+                },
+                eventRender: function (event, element) {
+                    /*element.tooltip({
+                     title: event.description,
+                     container: "body"
+                     });*/
+
+                    $(element).bind("dblclick", function(){
+                        edit_event(event);
+                    });
+
+                    $(element).bind("click", function(){
+                        $(this).attr("tabindex", "-1");
+                        $(this).addClass("calendar-event");
+                        $(this).focus();
+                        $("#event_focus").val(event.id);
+                    });
+
+                    $(element).contextMenu("contextMenu", {
+                        bindings: {
+                            'edit': function (t) {
+                                edit_event(event);
+                            },
+                            'copy': function (t) {
+                                $("#clipboard").val(event.id);
+                            },
+                            'delete': function (t) {
+                                delete_event(event.id);
+                            }
+                        }
+                    });
+                },
+                eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
+                    var research_id = $("#research_id").val();
+                    minuteDelta += dayDelta * 24 * 60;
+
+                    $.ajax({
+                        url: "/scientist/research/resize_event/",
+                        type: "POST",
+                        dataType: "json",
+                        async: true,
+                        data: {"research_id": research_id, "event_id": event.id, 'end_delta': minuteDelta},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            if (result.status == "fail") {
+                                alert(result.reason);
+                                revertFunc();
+                            }
+                        }
+                    });
+                },
+                eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
+                    if (!allDay) {
+                        var research_id = $("#research_id").val();
+                        minuteDelta += dayDelta * 24 * 60;
+
+                        $.ajax({
+                            url: "/scientist/research/resize_event/",
+                            type: "POST",
+                            dataType: "json",
+                            async: true,
+                            data: {"research_id": research_id, "event_id": event.id, 'start_delta': minuteDelta, 'end_delta': minuteDelta, 'all_day': allDay},
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                            },
+                            success: function (result) {
+                                if (result.status == "fail") {
+                                    alert(result.reason);
+                                    revertFunc();
+                                }
+                            }
+                        });
+                    } else {
+                        revertFunc();
+                    }
+                }
+            });
+
+            $("#calendar").resizable({
+                handles: "all",
+                grid: [10, 10],
+                ghost: true,
+                stop: function (e, ui) {
+                    $('#calendar').fullCalendar("option", "height", ui.size.height);
+                    $('#calendar').fullCalendar("option", "width", ui.size.width);
+                }
+            });
+        });
+
+        function delete_event(event_id) {
+            bootbox.confirm("Are you sure you want to delete this event?", function (confirmed) {
+                if (confirmed) {
+                    $.ajax({
+                        url: "/scientist/research/delete_event/",
+                        type: "POST",
+                        dataType: "json",
+                        async: true,
+                        data: {"event_id": event_id},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            if (result.status == "success") {
+                                var clipboard = $("#clipboard").val();
+                                if (clipboard == event_id) {
+                                    $("#clipboard").val("");
+                                }
+                                $("#calendar").fullCalendar("refetchEvents");
+                            } else {
+                                alert(result.reason);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function clean_error() {
+            $("div.control-group").each(function () {
+                if ($(this).hasClass("error")) {
+                    $(this).removeClass("error");
+                    $(this).find("span.help-block").html("");
+                }
+            });
+        }
+
+        function add_error(id, msg) {
+            $("#" + id).closest("div.control-group").addClass("error");
+            $("#" + id).next().html(msg);
+        }
+
+        function edit_event(event) {
+            clean_error();
+            $("#current_num").html(parseInt(event.join_participant_num));
+            $("#total_num").html(parseInt(event.total_participant_num));
+            $("#id_start").val($.fullCalendar.formatDate(new Date(event.start), "yyyy-MM-dd HH:mm:ss"));
+            $("#id_end").val($.fullCalendar.formatDate(new Date(event.end), "yyyy-MM-dd HH:mm:ss"));
+            $("#event_id").val(event.id);
+            $("#event_modal_title").html("Edit event");
+            $("#id_number").show();
+            $("#current_num").attr("data-event-id", event.id);
+            $("#event_modal").modal();
+        }
+
+        function date_to_string(date, tzinfo) {
+            var yyyy = date.getFullYear();
+            var mm = date.getMonth() + 1;
+            var dd = date.getDate();
+            var hh = date.getHours();
+            var mi = date.getMinutes();
+            var ss = date.getSeconds();
+            if (tzinfo == "None") {
+                return yyyy + "-" + mm + "-" + dd + " " + hh + ":" + mi + ":" + ss;
+            } else {
+                //GMT-0800
+                //var timezone = date.toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
+                //-0800
+                var timezone = date.toString().match(/([-\+][0-9]+)\s/)[1];
+                return yyyy + "-" + mm + "-" + dd + " " + hh + ":" + mi + ":" + ss + " " + timezone;
+            }
+        }
+    </script>
+{% endblock %}

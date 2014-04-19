@@ -1,0 +1,14 @@
+{% load i18n avatar_tags %}
+
+<div class="avatar_upload">
+    {% if user.is_authenticated %}
+        <div id="upload_avatar" class="fileupload fileupload-new">
+            <div class="fileupload-new thumbnail">{% avatar user %}</div>
+            <div>
+                <span class="btn btn-file">
+                    <span class="fileupload-new">{% trans "Select image" %}</span>
+                </span>
+            </div>
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,51 @@
+{% extends "userprofile/base.html" %}
+
+{% load i18n %}
+
+{% block userprofile_tab %}
+<ul class="tabs tabs-inline tabs-top">
+    <li>
+        <a href="{% url "basic_info" user.username %}"><i class="icon-user"></i> {% trans "Basic Info" %}</a>
+    </li>
+    {% if request.session.user_type == "participant" %}
+        <li>
+            <a href="{% url "question_info" user.username %}"><i class="icon-question-sign"></i> {% trans "Question" %}</a>
+        </li>
+    {% endif %}
+    <li>
+        <a href="{% url "account_change_password" %}"><i class="icon-key"></i> {% trans "Change Password" %}</a>
+    </li>
+    <li>
+        <a href="{% url "account_email" %}"><i class="icon-envelope"></i> {% trans "Account Email" %}</a>
+    </li>
+    <li>
+        <a href="{% url "userrole" %}"><i class="icon-exchange"></i> {% trans "User Role" %}</a>
+    </li>
+    <li class="active">
+        <a href="{% url "account" %}"><i class="icon-remove-sign"></i> {% trans "Delete Account" %}</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block userprofile_panel %}
+    <ul class="stats user-role-auto">
+        {% for role in roles %}
+            <li class="satblue">
+                <a href="{% url "delete_account" role %}">
+                    {% if role == 'participant' %}
+                        <i class="icon-beaker"></i>
+                    {% elif role == 'scientist' %}
+                        <i class="icon-user-md"></i>
+                    {% elif role == 'department' %}
+                        <i class="icon-hospital"></i>
+                    {% endif %}
+
+                    <div class="details">
+                        <span class="big">{% trans role|capfirst %}</span>
+                        <span>{% trans "Level" %} {{ forloop.counter }}</span>
+                    </div>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

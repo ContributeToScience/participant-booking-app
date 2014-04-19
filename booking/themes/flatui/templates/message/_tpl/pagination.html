@@ -1,0 +1,21 @@
+{% with bootstrap_pagination_url=bootstrap_pagination_url|default:"?" %}
+    <div class="btn-group text hidden-768">
+        <span>
+            <strong>
+                {{ current_page }}-{{ last_page }}
+            </strong>
+            of
+            <strong>
+                {{ total_number }}
+            </strong>
+        </span>
+    </div>
+    <div class="btn-group">
+        <a href="{% if current_page == 1 %}#{% else %}{{ bootstrap_pagination_url }}page=1{% endif %}" class="btn {% if current_page == 1 %}disabled{% endif %}">
+            &laquo;
+        </a>
+        <a href="{% if current_page == num_pages %}#{% else %}{{ bootstrap_pagination_url }}page={{ num_pages }}{% endif %}" class="btn {% if current_page == num_pages %}disabled{% endif %}">
+            &raquo;
+        </a>
+    </div>
+{% endwith %}

@@ -1,0 +1,93 @@
+{% extends "department/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div id="main">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department" %}">{% trans "Department" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Invite scientist" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="box">
+                <div class="box-title">
+                    <h3>{% trans "Invite Scientist" %}</h3>
+                </div>
+                <div class="box-content">
+                    <form action="#" method="GET" class='form-horizontal'>
+                        <div class="control-group">
+                            <label for="textarea" class="control-label">{% trans "Invite Scientists" %}</label>
+
+                            <div class="controls">
+                                <div id="invite_scientist"></div>
+                                <span class="help-block">Enter comma or space separated email and we will send them an email with a link which will let them join your scheme.</span>
+                            </div>
+                        </div>
+                        <div class="form-actions-custom">
+                            <button id="btn_submit" type="submit"
+                                    class="btn btn-primary">{% trans "Save changes" %}</button>
+                            <a href="{% url "department" %}" class="btn">{% trans "Cancel" %}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    <link href="{{ STATIC_URL }}css/TagContacts.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/TagContacts.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var scientists = $("#invite_scientist").tagContacts("/api/scientists/",
+                    {
+                        // Min input width, default is 60
+                        minInputWidth: 60,
+                        // Min dropdown width, default is 300
+                        minDropdownWidth: 300,
+                        // Max items in the dropdown list, default is 5
+                        maxItemNumber: 5,
+                        // Min length to trigger the dropdown list, default is 1
+                        minLength: 1,
+                        // Can provide an exists contacts list here, default is null
+                        selectedContacts: [],
+
+                        beforeAdd: function (id) {
+                            console.log("beforeAdd the id: " + id);
+                            return true;  // If return false then can not be added.
+                        },
+                        beforeRemove: function (id) {
+                            console.log("beforeRemove the id: " + id);
+                            return true;  // If return false then can not be removed.
+                        },
+                        afterRemoved: function (id) {
+                            console.log("afterRemoved the id: " + id);
+                        }
+                    }
+            );
+
+            $("#btn_submit").bind("click", function () {
+                alert(scientists.getContacts());
+            });
+        });
+    </script>
+{% endblock %}

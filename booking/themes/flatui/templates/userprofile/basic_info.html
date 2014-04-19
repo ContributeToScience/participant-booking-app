@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% load i18n bootstrap_toolkit %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Signup" %} {{ user_type }}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Basic info" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="row-fluid">
+                    <form id="form" class="form-horizontal" method="POST">
+                        {% csrf_token %}
+                        <div class="box">
+                            <div class="box-title">
+                                <h3><i class="icon-th-list"></i> {% trans "Bio" %}</h3>
+                            </div>
+                            <div class="box-content">
+                                {% include "_errors.html" %}
+                                <div class="control-group required">
+                                    <label class="control-label" for="id_first_name">
+                                        <span class="red">*</span> {{ form.first_name.label }}
+                                    </label>
+
+                                    <div class="controls">
+                                        <input id="id_first_name" maxlength="30" name="first_name" type="text"
+                                               value="{{ form.first_name.value|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="id_middle_name">
+                                        {{ form.middle_name.label }}
+                                    </label>
+
+                                    <div class="controls">
+                                        <input id="id_middle_name" maxlength="30" name="middle_name" type="text"
+                                               value="{{ form.middle_name.value|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                                <div class="control-group required">
+                                    <label class="control-label" for="id_last_name">
+                                        <span class="red">*</span> {{ form.last_name.label }}
+                                    </label>
+
+                                    <div class="controls">
+                                        <input id="id_last_name" maxlength="30" name="last_name" type="text" value="{{ form.last_name.value|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="id_address">
+                                        <span class="red">*</span> {{ form.address.label }}
+                                    </label>
+
+                                    <div class="controls">
+                                        <input id="id_address" name="address" type="text" value="{{ form.address.value|default_if_none:"" }}">
+                                        <input data-rule-maxlength="255" id="id_lng" name="lng" type="hidden"
+                                               value="{{ form.lng.value|default_if_none:0 }}">
+                                        <input data-rule-maxlength="255" id="id_lat" name="lat" type="hidden"
+                                               value="{{ form.lat.value|default_if_none:0 }}">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <div id="map_canvas" data-target-id="id_location" class="google-map"></div>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="id_mobile">
+                                        {{ form.mobile.label }}
+                                    </label>
+
+                                    <div class="controls">
+                                        <input id="id_mobile" maxlength="30" name="mobile" type="text" value="{{ form.mobile.value|default_if_none:"" }}">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input type="checkbox" id="id_is_payment_possible" name="is_payment_possible">
+                                        {% trans "Is payment possible?" %}
+                                    </div>
+                                </div>
+                                <div id="id_payment_info">
+                                    <div class="control-group required">
+                                        <label class="control-label" for="id_payment_type">
+                                            {{ form.payment_type.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <select id="id_payment_type" name="payment_type">
+                                                {% for value, text in form.payment_type.field.choices %}
+                                                    <option value="{{ value }}" {% if value == form.payment_type.value %}selected="selected"{% endif %}>{{ text }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="control-group required">
+                                        <label class="control-label" for="id_payment_account">
+                                            {{ form.payment_account.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_payment_account" maxlength="30" name="payment_account" type="text"
+                                                   value="{{ form.payment_account.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% if user_type == "participant" %}
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_biological_info">
+                                            {{ form.biological_info.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_biological_info" name="biological_info" type="text" value="{{ form.biological_info.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_dob">
+                                            {{ form.dob.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input class="datepick" data-date-format="yyyy-mm-dd" data-rule-dateiso="true"
+                                                   data-rule-required="true" id="id_dob" name="dob" type="text"
+                                                   value="{{ form.dob.value|date:"Y-m-d" }}">
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_gender">
+                                            {{ form.gender.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <select id="id_gender" name="gender">
+                                                {% for value, text in form.gender.field.choices %}
+                                                    <option value="{{ value }}" {% if value == form.gender.value %}selected="selected"{% endif %}>{{ text }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <div class="controls">
+                                            <input type="checkbox" id="id_email_me" name="email_me"
+                                                   {% if form.email_me.value %}checked="checked"{% endif %}>
+                                            {{ form.email_me.label }}
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <div class="controls">
+                                            <input type="checkbox" id="id_some_research" name="some_research"
+                                                   {% if form.some_research.value %}checked="checked"{% endif %}>
+                                            {{ form.some_research.label }}
+                                        </div>
+                                    </div>
+                                {% elif user_type == "scientist" %}
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_academic_position">
+                                            {{ form.academic_position.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_academic_position" name="academic_position" type="text"
+                                                   value="{{ form.academic_position.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_department">
+                                            {{ form.department.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_department" name="department" type="text" value="{{ form.department.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_university">
+                                            {{ form.university.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_university" name="university" type="text" value="{{ form.university.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_country">
+                                            {{ form.country.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_country" name="country" type="text" value="{{ form.country.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                {% elif user_type == "department" %}
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_credit_scheme_name">
+                                            {{ form.credit_scheme_name.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_credit_scheme_name" name="credit_scheme_name" type="text"
+                                                   value="{{ form.credit_scheme_name.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_department">
+                                            {{ form.department.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_department" name="department" type="text" value="{{ form.department.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="id_university">
+                                            {{ form.university.label }}
+                                        </label>
+
+                                        <div class="controls">
+                                            <input id="id_university" name="university" type="text" value="{{ form.university.value|default_if_none:"" }}">
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">{% trans "Next" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/plugins/datepicker/bootstrap-datepicker.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            initializeMap("map_canvas", "id_address", "id_lng", "id_lat");
+
+            toggle_payment_info(false);
+
+            $("#id_is_payment_possible").on("click", function () {
+                toggle_payment_info($(this).is(":checked"));
+            });
+        });
+
+        function toggle_payment_info(show) {
+            if (show) {
+                $("#id_payment_info").show();
+            } else {
+                $("#id_payment_info").hide();
+            }
+        }
+    </script>
+{% endblock %}

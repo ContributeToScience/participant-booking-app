@@ -1,0 +1,10 @@
+from django.contrib import admin
+
+from .models import UserProfile
+
+
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_participant', 'is_scientist', 'is_department', 'created',)
+
+
+admin.site.register(UserProfile, UserProfileAdmin)

@@ -1,0 +1,7 @@
+{% if is_show %}
+    <a class="btn btn-danger btn-contact-message" href="{% url "message_post" %}"
+       data-content-object-id="{{ content_object_id }}" data-recipient-id="{{ recipient_id }}"
+       data-type="1" rel="tooltip" data-original-title="Request cancel the study">
+        <i class="icon-remove"></i>
+    </a>
+{% endif %}

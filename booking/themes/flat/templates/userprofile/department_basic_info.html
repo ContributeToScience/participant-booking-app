@@ -1,0 +1,122 @@
+{% extends "userprofile/userprofile.html" %}
+
+{% load i18n bootstrap_toolkit %}
+
+{% block basic_info %}
+    {% include "_errors.html" %}
+    <div class="control-group required">
+        <label class="control-label" for="id_first_name">
+            {{ form.first_name.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_first_name" maxlength="30" name="first_name" type="text"
+                   value="{{ form.first_name.value|default_if_none:"" }}">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="id_middle_name">
+            {{ form.middle_name.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_middle_name" maxlength="30" name="middle_name" type="text"
+                   value="{{ form.middle_name.value|default_if_none:"" }}">
+        </div>
+    </div>
+    <div class="control-group required">
+        <label class="control-label" for="id_last_name">
+            {{ form.last_name.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_last_name" maxlength="30" name="last_name" type="text"
+                   value="{{ form.last_name.value|default_if_none:"" }}">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="id_city">
+            {{ form.address.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_address" name="address" type="text" value="{{ form.address.value|default_if_none:"" }}">
+            <input data-rule-maxlength="255" id="id_lng" name="lng" type="hidden"
+                   value="{{ form.lng.value|default_if_none:0 }}">
+            <input data-rule-maxlength="255" id="id_lat" name="lat" type="hidden"
+                   value="{{ form.lat.value|default_if_none:0 }}">
+
+            <div id="map_canvas" data-target-id="id_location" class="map"></div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="id_mobile">
+            {{ form.mobile.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_mobile" maxlength="30" name="mobile" type="text" value="{{ form.mobile.value|default_if_none:"" }}">
+        </div>
+    </div>
+    <div class="control-group required">
+        <label class="control-label" for="id_payment_type">
+            {{ form.payment_type.label }}
+        </label>
+
+        <div class="controls">
+            <select id="id_payment_type" name="payment_type">
+                {% for value, text in form.payment_type.field.choices %}
+                    <option value="{{ value }}" {% if value == form.payment_type.value %}selected="selected"{% endif %}>{{ text }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="control-group required">
+        <label class="control-label" for="id_payment_account">
+            {{ form.payment_account.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_payment_account" maxlength="30" name="payment_account" type="text" value="{{ form.payment_account.value|default_if_none:"" }}">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="id_credit_scheme_name">
+            {{ form.credit_scheme_name.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_credit_scheme_name" name="credit_scheme_name" type="text"
+                   value="{{ form.credit_scheme_name.value|default_if_none:"" }}">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="id_department">
+            {{ form.department.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_department" name="department" type="text" value="{{ form.department.value|default_if_none:"" }}">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="id_university">
+            {{ form.university.label }}
+        </label>
+
+        <div class="controls">
+            <input id="id_university" name="university" type="text" value="{{ form.university.value|default_if_none:"" }}">
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {% include "avatar/_upload_avatar_js.html" %}
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            initializeMap("map_canvas", "id_address", "id_lng", "id_lat");
+        });
+    </script>
+{% endblock %}

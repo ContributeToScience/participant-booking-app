@@ -1,0 +1,204 @@
+{% extends "department/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div id="main">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department" %}">{% trans "Department" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Manage Participants" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <form id="choose_form" action="." method="POST" class='form-horizontal'>
+            {% csrf_token %}
+            <div class="row-fluid">
+                <div class="span12">
+                    <table id="scheme_table" class="table table-nomargin">
+                        <tbody>
+                        <tr>
+                            <td>{% trans "Name" %}:</td>
+                            <td>{{ scheme.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Start" %}:</td>
+                            <td>{{ scheme.start|date:"Y-m-d" }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "End" %}:</td>
+                            <td>{{ scheme.end|date:"Y-m-d" }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Location" %}:</td>
+                            <td>{{ scheme.university_department }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Total Credit" %}:</td>
+                            <td>{{ scheme.total_credit }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Remain Credit" %}:</td>
+                            <td>{{ scheme.remain_credit }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="box box-color box-bordered">
+                        <div class="box-title">
+                            <h3>
+                                <i class="icon-table"></i>{% trans "Participant List" %}
+                            </h3>
+
+                            <div class="actions">
+                                <select name="scheme_id" class="input-large">
+                                    {% for scheme in scheme_list %}
+                                        <option value="{{ scheme.id }}"
+                                                {% if scheme.id == scheme_id %}selected="selected"{% endif %}>{{ scheme.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <a href="{% url "choose_participant" %}" class='btn'><i
+                                        class="icon-plus-sign"></i> {% trans "Add Participant" %}</a>
+                                <a id="delete_participant" href="#" class='btn'><i
+                                        class="icon-minus-sign"></i> {% trans "Delete Participant" %}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-content nopadding">
+                        <table class="table table-hover table-nomargin">
+                            <thead>
+                            <tr>
+                                <th><input id="select_all" type="checkbox" class='icheck-me' data-skin="square"
+                                           data-color="blue"></th>
+                                <th>{% trans "Scheme" %}</th>
+                                <th>{% trans "Participant" %}</th>
+                                <th>{% trans "Credits required" %}</th>
+                                <th>{% trans "Credits left to complete" %}</th>
+                                <th>{% trans "Rating" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in participant_list %}
+                                <tr>
+                                    <td><input name="participant_id" type="checkbox" class="icheck-me"
+                                               data-skin="square"
+                                               data-color="blue" value="{{ item.id }}"></td>
+                                    <td>{{ item.credit_scheme.name }}</td>
+                                    <td>{{ item.participant.userprofile.get_full_name }}</td>
+                                    <td>
+                                        <input name="required_credit" type="text" class="input-mini"
+                                               value="{{ item.required_credit }}">&nbsp;<a
+                                            class="btn btn-set-required-credit"><i
+                                            class="icon-edit"></i>{% trans "Set Required Credits" %}</a>
+                                    </td>
+                                    <td>{{ item.incomplete_credit }}</td>
+                                    <td><i class="icon-star"></i><i class="icon-star"></i><i
+                                            class="icon-star-empty"></i></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(function () {
+            $("#select_all").click(function () {
+                var is_checked = true;
+                if ($(this).parent().hasClass("checked")) {
+                    is_checked = false;
+                }
+                var $this = $(this);
+                $("#choose_form input[name='participant_id']").each(function () {
+                    $(this).attr("checked", is_checked);
+                    if (is_checked) {
+                        $(this).parent().addClass("checked");
+                    } else {
+                        $(this).parent().removeClass("checked");
+                    }
+                });
+            });
+
+            $("#delete_participant").bind("click", function () {
+                var count = 0;
+                $("#choose_form input[name='participant_id']").each(function () {
+                    if ($(this).parent().hasClass("checked")) {
+                        count++;
+                    }
+                });
+                if (count <= 0) {
+                    alert("Please select at least one");
+                    return false
+                } else if (confirm("Can you sure want to delete selected participant?")) {
+                    $.ajax({
+                        url: "/department/delete_participant/",
+                        type: "POST",
+                        dataType: "json",
+                        data: $("#choose_form").serialize(),
+                        async: false,
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            //alert(result.status);
+
+                            $("#choose_form input[name='participant_id']").each(function () {
+                                if ($(this).parent().hasClass("checked")) {
+                                    $(this).closest("tr").remove();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            $(".btn-set-required-credit").bind("click", function () {
+                var $this = $(this);
+                var scheme_id = $("select[name='scheme_id']").val();
+                var participant_id = $this.closest("tr").find("input[name='participant_id']").val();
+                var required_credit = $this.prev("input[name='required_credit']").val();
+
+                var pattern = /^\d+$/;
+                if (!pattern.test(required_credit)) {
+                    alert("required credit can only enter numbers");
+                    return false;
+                }
+
+                $.ajax({
+                    url: "/department/set_required_credit/",
+                    type: "POST",
+                    dataType: "json",
+                    data: {"scheme_id": scheme_id, "participant_id": participant_id, "required_credit": required_credit},
+                    async: true,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                    },
+                    success: function (result) {
+                        if (result.status == "fail") {
+                            alert(result.reason);
+                        } else {
+                            $this.prev("input[name='required_credit']").val(required_credit);
+                            $this.parent().next().html(result.incomplete_credit);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

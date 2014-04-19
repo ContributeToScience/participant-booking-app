@@ -1,0 +1,47 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Payment Record List" %}</a>
+                </li>
+            </ul>
+        </div>
+        <div id="scientist_research_list" class="row-fluid">
+            <div class="alert  alert-error" data-dismiss="alert">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                {% trans "Your account available balance" %}: {{ request.user.userprofile.available_balance }}
+            </div>
+            <table id="scheme_table" class="table table-nomargin">
+                <tbody>
+                <tr>
+                    <th>{% trans "Scientist" %}:</th>
+                    <th>{% trans "Income/Spending" %}:</th>
+                    <th>{% trans "Description" %}:</th>
+                    <th>{% trans "Time" %}:</th>
+                </tr>
+                {% for record in record_list %}
+                    <tr>
+                        <td>{{ record.scientist.userprofile.get_full_name }}</td>
+                        <td>{% if record.credit > 0 %}+{% endif %}{{ record.credit }}</td>
+                        <td>{{ record.description }}</td>
+                        <td>{{ record.created|date:'Y-m-d H:i:s' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

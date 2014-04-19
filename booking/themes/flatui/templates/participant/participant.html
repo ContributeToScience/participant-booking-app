@@ -1,0 +1,96 @@
+{% extends "participant/base.html" %}
+
+{% load i18n bootstrap_toolkit custom_participant_tags donate_tags %}
+
+{% block content %}
+    <div id="participate">
+        <div class="container clearfix">
+            <div class="box score">
+                <table>
+                    <tr>
+                        <td class="label-text">{% trans "Good participant score" %}:</td>
+                        <td width="50"></td>
+                        <td><div class="rating" data-user-id="{{ request.user.id }}"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="label-text">{% trans "Studies to date" %}:</td>
+                        <td width="50"></td>
+                        <td class="date">{% get_take_part_research_count request.user %}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-text">{% trans "Science Altruist score" %}:</td>
+                        <td width="50"></td>
+                        <td class="donated">{% donated_rank_of_participant request.user %}% {% trans "donated" %}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="box online-research">
+                <div class="row1 clearfix">
+                    <img src="{{ STATIC_URL }}img/pc.png" width="200" height="138" alt="" />
+                    <a href="{% url "research_list" "ol" %}" class="btn btn-default">{% trans "Online Research" %}</a>
+                </div>
+                <div class="row2 clearfix">
+                    <img src="{{ STATIC_URL }}img/flask.png" width="200" height="201" alt="" />
+                    <a href="{% url "research_list" "nol" %}" class="btn btn-default btn1">{% trans "lab-based research in your area" %}</a>
+                    <a href="{% url "research_list" "nol_map" %}" class="btn btn-default">{% trans "world map of lab-based research" %}</a>
+                </div>
+                <p>{% trans "See lab-based research in your area or do an online study now" %}</p>
+            </div>
+
+            <div class="box calendar-clipboard clearfix">
+                <div class="row-left">
+                    <img src="{{ STATIC_URL }}img/Calendar.png" width="100" height="100" alt="" />
+                    <p>{% trans "See when I am signed up to do research" %}</p>
+                    <a href="{% url "take_part_researches_calendar" %}" class="btn btn-default">{% trans "Study Calendar" %}</a>
+                </div>
+                <div class="row-right">
+                    <img src="{{ STATIC_URL }}img/Clipboard.png" width="100" height="100" alt="" />
+                    <p>{% trans "See when I am signed up to do research" %}</p>
+                    <a href="{% url "take_part_researches" %}" class="btn btn-default">{% trans "List of my studies" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/plugins/jquery-raty/jquery.raty.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("div.rating").raty({
+                path: '{{ STATIC_URL }}css/plugins/jquery-raty/img',
+                number: 3,
+                hints: ['10 minutes late', 'few minutes late', 'great participant'],
+                cancel: true,
+                cancelHint: 'did not take the experiment seriously',
+                readOnly: true,
+                starOn: "custom-star-on.png",
+                starOff: "custom-star-off.png",
+                starHalf: "custom-star-half.png",
+                size: 48,
+                score: function () {
+                    var score = 0;
+                    var user_id = $(this).attr("data-user-id");
+                    $.ajax({
+                        url: "/rating/get_participant_score/",
+                        type: "POST",
+                        dataType: "json",
+                        async: false,
+                        data: {"user_id": user_id},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            if (result.status == 'success') {
+                                score = result.score;
+                            }
+                        }
+                    });
+                    return score;
+                }
+            });
+        });
+    </script>
+{% endblock %}

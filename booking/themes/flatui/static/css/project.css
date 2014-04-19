@@ -1,0 +1,290 @@
+/*! project specific CSS goes here. */
+
+/* Sticky footer styles
+            -------------------------------------------------- */
+
+html,
+body {
+    height: 100%;
+    /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* Negative indent footer by it's height */
+    margin: 0 auto -60px;
+}
+
+/* Set the fixed height of the footer here */
+#push,
+#footer {
+    height: 60px;
+}
+
+#footer {
+    background-color: #f5f5f5;
+    position: fixed;
+}
+
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+    #footer {
+        margin-left: -20px;
+        margin-right: -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+@media (min-width:980px) {
+    #container {
+        padding-top: 60px;
+    }
+}
+
+@media (min-width:980px) and (max-width:1200px) {
+    .container {
+        width: 940px;
+    }
+}
+
+.container .credit {
+    margin: 20px 0;
+}
+
+#footer p {
+    padding: 0;
+}
+
+.user-type {
+    width: 340px;
+    height: 35px;
+}
+
+#main {
+    /*background: #fff;*/
+    background: #e8ddcb;
+    margin-left: 0px;
+    overflow: visible;
+    padding-bottom: 70px;
+    min-height: 400px;
+}
+
+form {
+    /*margin: 0 0 70px;*/
+    margin: 0 0 0 0;
+}
+
+.form-actions-custom {
+    padding-left: 160px;
+}
+
+.user-role-auto {
+    margin-bottom: 70px;
+}
+
+.login .wrapper {
+    top: 40%;
+}
+
+.alert {
+    margin-top: 10px;
+}
+
+.white {
+    color: white;
+}
+
+.white:hover {
+    text-decoration: none;
+}
+
+/*
+.white + div[class*="popover"] {
+    font-size: 12px;
+    color: #000000;
+}
+*/
+
+.fc-header-title h2 {
+    font-size: 1.5em;
+}
+
+.google-map {
+    height: 400px;
+    width: 500px;
+    /*margin-top: 20px;*/
+    overflow: hidden;
+    border: 1px solid black;
+}
+
+.google-map .drag {
+    z-index: 1;
+    width: 12px;
+    height: 12px;
+    background: url('../img/resize.gif') no-repeat;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    cursor: nw-resize;
+}
+
+#navigation .main-nav>li>a.not-active{
+    color: #5A5656;
+}
+
+.messages>li .button {
+    float: left;
+}
+
+.messages>li.right .button {
+    float: right;
+}
+
+.messages>li .message {
+    margin-left: 75px;
+}
+
+.messages>li.right .message {
+    margin-right: 100px;
+}
+
+.donate-slider {
+    width: 190px;
+}
+
+.input_duration {
+    display: none;
+}
+
+.input_duration input {
+    margin: 0 0 0 0;
+}
+
+.gm-style-cc {
+    display: none;
+}
+
+.calendar-event:focus{
+    outline: 0;
+    outline: thin dotted \9;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 30px rgba(10, 3, 153, 0.60);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 30px rgba(10, 3, 153, 0.60);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 30px rgba(10, 3, 153, 0.60);
+}
+
+.research-map{
+    margin-top: 20px;
+}
+
+.dropdown-menu {
+    min-width: 130px;
+}
+
+.contact-message-body {
+    background: #fff;
+}
+
+.unread {
+    font-weight: bold;
+}
+
+.contact-message .tabs.tabs-inline.tabs-left {
+    position: static;
+    background: #eee;
+    width: 100%;
+}
+
+.contact-message .span10 {
+    margin-left: 0px;
+    border-left: 1px solid #bbb;
+}
+
+.contact-message .tab-content.tab-content-inline {
+    margin-left: 32px;
+    border-left: none;
+    min-height: 184px;
+}
+
+.contact-message .tabs.tabs-inline.tabs-left > li.write {
+    text-align: center;
+    padding: 10px;
+}
+
+.contact-message .tabs.tabs-inline.tabs-left > li.write > a {
+    margin: 0px;
+}
+
+.contact-message .highlight-toolbar {
+    padding: 0px;
+}
+
+.contact-message-unread {
+    background-color: #e74c3c;
+    font-size: 12px;
+    line-height: 17px;
+    height: 18px;
+    margin: -9px -11px;
+    min-width: 18px;
+    padding: 0 1px;
+    width: auto;
+    -webkit-font-smoothing: subpixel-antialiased;
+    font-family: 'Lato', Helvetica, Arial, sans-serif;
+    border-radius: 40%;
+    color: #ffffff;
+    font-weight: 700;
+    position: absolute;
+    right: 12px;
+    text-align: center;
+    top: 28px;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+#login_modal {
+    text-align: center;
+}
+
+#login_modal .remember input {
+    float: left;
+}
+
+#login_modal .remember label {
+    float: left;
+}
+
+#login_error {
+    display: none;
+}
+
+#signup_modal {
+    width: 500px;
+    text-align: center;
+}
+
+#signup_error {
+    display: none;
+}
+
+.vertical-line {
+    width: 1px;
+    height: 210px;
+    background-color: #808080;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+#login_form .submit {
+    margin-top: 33px;
+}
+
+.red {
+    color: red;
+}

@@ -1,0 +1,381 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n custom_participant_tags custom_message_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist_research_list" %}">{% trans "Research List" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Research Detail" %}</a>
+                </li>
+            </ul>
+        </div>
+        <form id="choose_form" action="." method="POST" class='form-horizontal'>
+            {% csrf_token %}
+            <div class="row-fluid">
+                <div class="span12">
+                    <table id="scheme_table" class="table table-nomargin">
+                        <tbody>
+                        <tr>
+                            <td>{% trans "Name" %}:</td>
+                            <td>{{ research.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Location" %}:</td>
+                            <td>{{ research.location.address }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Duration" %}:</td>
+                            <td>{{ research.start|date:'Y-m-d' }} - {{ research.end|date:'Y-m-d' }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Remuneration for taking part" %}:</td>
+                            <td>{{ research.currency }} {{ research.remuneration }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Ethical permission granted to do study" %}:</td>
+                            <td>{% if research.ethical_permission %}<i class="icon-ok"></i>
+                                {% else %}<i class="icon-remove"></i>{% endif %}</td>
+                        </tr>
+                        {% if not research.ethical_permission %}
+                            <tr>
+                                <td>{% trans "Non ethical permission reason" %}:</td>
+                                <td>{{ research.non_ethical_permission_reason }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td>{% trans "Description" %}:</td>
+                            <td>{{ research.description }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Experimenter's bio" %}:</td>
+                            <td>{% trans "TBD" %}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "'Good Researcher' reputation, tests so far conducted" %}:</td>
+                            <td>{% trans "TBD" %}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Number of participants needed" %}:</td>
+                            <td>{{ research.need_participant_num }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Any restrictions on who can do study" %}:</td>
+                            <td>{% trans "TBD" %}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Total credit" %}:</td>
+                            <td>{% if research.is_paid %}<i class="icon-paypal" title="{% trans 'Have paid for paypal' %}"></i>{% endif %} {{ research.total_credit }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Reamin credit" %}:</td>
+                            <td>{{ research.remain_credit }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="box box-color box-bordered">
+                        <div class="box-title">
+                            <h3>
+                                <i class="icon-table"></i>{% trans "Participant List" %}
+                            </h3>
+
+                            {% if not research.is_complete %}
+                                <div class="actions">
+                                    <a class="btn">
+                                        <div class="assign_rating" data-type="time"></div>
+                                        <div class="assign_rating" data-type="attitude"></div>
+                                    </a>
+                                    <a id="btn_assign_credit" class="btn"><i
+                                            class="icon-edit"></i> {% trans "Assign Credit" %}</a>
+                                    <a id="btn_confirmed" class="btn"><i class="icon-ok"></i> {% trans "Confirm" %}
+                                    </a>
+                                    <a id="btn_reject" class="btn"><i class="icon-remove"></i> {% trans "Reject" %}
+                                    </a>
+                                    <a id="btn_bulk_feedback" class="btn" href="{% url "message_post" %}"
+                                       data-content-object-id="{{ research.id }}" data-type="2" rel="tooltip"
+                                       data-original-title="Bulk Feedback">
+                                        <i class="icon-bullhorn"></i> {% trans "Bulk Feedback" %}
+                                    </a>
+                                    <input id="research_id" name="research_id" type="hidden" value="{{ research.id }}">
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="box-content nopadding">
+                        <table class="table table-hover table-nomargin">
+                            <thead>
+                            <tr>
+                                <th><input id="select_all" type="checkbox" class="icheck-me" data-skin="square"
+                                           data-color="blue" {% if not research.is_paid %}disabled="disabled"{% endif %}></th>
+                                <th>{% trans "Participant" %}</th>
+                                <th>{% trans "Award credit" %}</th>
+                                <th>{% trans "Confirme" %}</th>
+                                <th>{% trans "Rating" %}</th>
+                                <th>{% trans "Contact" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in participant_list %}
+                                <tr>
+                                    <td><input name="participant_id" type="checkbox" class="icheck-me"
+                                               data-skin="square"
+                                               data-color="blue" data-recipient-id="{{ item.participant.id }}" value="{{ item.id }}" {% if research.is_paid == False or item.award_credit > 0 or item.scientist_award_dt != None %}disabled="disabled"{% endif %}></td>
+                                    <td>{% show_participant_name research item %}</td>
+                                    <td>{{ item.award_credit }}</td>
+                                    <td>{% if item.confirmed %}<i class="icon-ok-sign"></i>
+                                        {% else %}<i class="icon-remove-sign green"></i>{% endif %}</td>
+                                    <td>
+                                        <div class="rating" data-research-id="{{ research.id }}"
+                                             data-user-id="{{ item.participant.id }}"
+                                             data-readonly="{% if not research.is_complete %}{{ item.confirmed }}{% else %}False{% endif %}" data-type="time"></div>
+                                        <div class="rating" data-research-id="{{ research.id }}"
+                                             data-user-id="{{ item.participant.id }}"
+                                             data-readonly="{% if not research.is_complete %}{{ item.confirmed }}{% else %}False{% endif %}" data-type="attitude"></div>
+                                    </td>
+                                    <td>
+                                        {% send_message item.participant.id research.id %}
+                                        {% feedback item.participant.id research.id %}
+                                        {% request_cancel item.participant.id research.id %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/plugins/jquery-raty/jquery.raty.js"></script>
+    <script type="text/javascript">
+    $(function () {
+        function get_params() {
+            var params = "?research_id=" + $("#research_id").val();
+            var count = 0;
+            $("#choose_form input[name='participant_id']").each(function () {
+                if ($(this).parent().hasClass("checked")) {
+                    params += "&participant_id=" + $(this).val();
+                    count++;
+                }
+            });
+            if (count > 0) {
+                return params;
+            }
+        }
+
+        $("div.assign_rating").raty({
+            path: '{{ STATIC_URL }}css/plugins/jquery-raty/img',
+            number: 3,
+            hints: ['10 minutes late', 'few minutes late', 'great participant'],
+            cancel: true,
+            cancelHint: 'did not take the experiment seriously',
+            score: 0,
+            click: function (score, evt) {
+                var params = get_params();
+                if (params) {
+                    if (!score) score = 0; //cancel click
+                    params = params.replace("?", "&");
+                    var type = $(this).attr("data-type");
+                    params += "&score=" + score + "&type=" + type;
+                    $.ajax({
+                        url: "/rating/set_participant_score/",
+                        type: "POST",
+                        dataType: "json",
+                        async: true,
+                        data: params,
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            if (result.status == 'fail') {
+                                alert(result.reason);
+                            } else {
+                                $("div.rating").each(function () {
+                                    if ($(this).attr("data-type") == type) {
+                                        $(this).raty('score', score);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    alert("Please select at least one");
+                    return false;
+                }
+            }
+        });
+
+        $("div.rating").raty({
+            path: '{{ STATIC_URL }}css/plugins/jquery-raty/img',
+            number: 3,
+            hints: ['10 minutes late', 'few minutes late', 'great participant'],
+            cancel: true,
+            cancelHint: 'did not take the experiment seriously',
+            score: function () {
+                var score = 0;
+                var count = 0;
+                var research_id = $(this).attr("data-research-id");
+                var user_id = $(this).attr("data-user-id");
+                var readonly = $(this).attr("data-readonly") === "False";
+                var type = $(this).attr("data-type");
+                $.ajax({
+                    url: "/rating/get_participant_score/",
+                    type: "POST",
+                    dataType: "json",
+                    async: false,
+                    data: {"research_id": research_id, "user_id": user_id, "type": type},
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                    },
+                    success: function (result) {
+                        if (result.status == 'success') {
+                            score = result.score;
+                            count = result.count;
+                        }
+                    }
+                });
+                $(this).wrap("<div class=\"row\">" +
+                            "<div class=\"span5\"></div>" +
+                            "<div class=\"span7\" style=\"line-height: 24px;\">X" + count + "</div>" +
+                            "</div>");
+                return score;
+            },
+            click: function (score, evt) {
+                var research_id = $(this).attr("data-research-id");
+                var user_id = $(this).attr("data-user-id");
+                var type = $(this).attr("data-type");
+                if (!score) score = 0; //cancel click
+                $.ajax({
+                    url: "/rating/set_participant_score/",
+                    type: "POST",
+                    dataType: "json",
+                    async: true,
+                    data: {"research_id": research_id, "user_id": user_id, "score": score, "type": type},
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                    },
+                    success: function (result) {
+                        if (result.status == 'fail') {
+                            alert(result.reason);
+                        }
+                    }
+                });
+            }
+        });
+
+        $("div.rating").each(function () {
+            var readonly = $(this).attr("data-readonly") === "False";
+            if (readonly) {
+                $(this).raty('readOnly', true);
+            }
+        });
+
+        $("#select_all").click(function () {
+            var is_checked = true;
+            if ($(this).parent().hasClass("checked")) {
+                is_checked = false;
+            }
+            $("#choose_form input[name='participant_id']").each(function () {
+                if (!$(this).attr("disabled")) {
+                    $(this).attr("checked", is_checked);
+                    if (is_checked) {
+                        $(this).parent().addClass("checked");
+                    } else {
+                        $(this).parent().removeClass("checked");
+                    }
+                }
+            });
+        });
+
+        $("#btn_confirmed").bind("click", function () {
+            var count = 0;
+            $("#choose_form input[name='participant_id']").each(function () {
+                if ($(this).parent().hasClass("checked")) {
+                    count++;
+                }
+            });
+            if (count <= 0) {
+                alert("Please select at least one");
+                return false;
+            } else {
+                $.ajax({
+                    url: "/scientist/research/confirmed_participant/",
+                    type: "POST",
+                    dataType: "json",
+                    data: $("#choose_form").serialize(),
+                    async: false,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                    },
+                    success: function (result) {
+                        if (result.status == "success") {
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#btn_reject").bind("click", function () {
+            var count = 0;
+            $("#choose_form input[name='participant_id']").each(function () {
+                if ($(this).parent().hasClass("checked")) {
+                    count++;
+                }
+            });
+            if (count <= 0) {
+                alert("Please select at least one");
+                return false;
+            } else if (confirm("Can you sure want to reject selected participant?")) {
+                $.ajax({
+                    url: "/scientist/research/reject_participant/",
+                    type: "POST",
+                    dataType: "json",
+                    data: $("#choose_form").serialize(),
+                    async: false,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                    },
+                    success: function (result) {
+                        if (result.status == "success") {
+                            $("#choose_form input[name='participant_id']").each(function () {
+                                if ($(this).parent().hasClass("checked")) {
+                                    $(this).closest("tr").remove();
+                                }
+                            });
+                        } else if (result.status == "warn") {
+                            alert(result.reason);
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#btn_assign_credit").bind("click", function () {
+            var params = get_params();
+            if (params) {
+                window.location.href = "/scientist/research/assign_credit/" + params;
+            } else {
+                alert("Please select at least one");
+            }
+        });
+    });
+    </script>
+{% endblock %}

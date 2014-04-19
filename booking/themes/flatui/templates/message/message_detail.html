@@ -1,0 +1,82 @@
+{% load i18n bootstrap_toolkit avatar_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% trans "Contribute to Science" %}{% endblock title %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <!-- Apple devices fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <!-- Apple devices fullscreen -->
+    <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css">
+    <!-- Bootstrap responsive -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-responsive.min.css">
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/base-style.css">
+    <!-- Color CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/themes.css">
+    <!-- Project CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/project.css">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+	<!--[if lt IE 9]>
+		<script src="js/html5shiv.js"></script>
+		<script src="js/respond.min.js"></script>
+	<![endif]-->
+
+    {% block extra_css %}{% endblock extra_css %}
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico"/>
+    <!-- Apple devices Homescreen icon -->
+    <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}img/apple-touch-icon-precomposed.png"/>
+</head>
+
+<body class="contact-message-body">
+    <form id="message_detail_form" method="POST" action="." class="form-horizontal">
+        {% csrf_token %}
+
+        <input id="id_status" name="status" type="hidden">
+        <input id="is_send" type="hidden" value="{{ is_send }}">
+
+        <ul class="messages">
+            <li class="right">
+                <div class="image">
+                    <img src="{% avatar_url message.sender 50 %}">
+                </div>
+                <div class="message">
+                    <span class="caret"></span>
+                    <span class="name">{{ message.sender.userprofile.get_full_name }}</span>
+                    <p>{{ message.content }}</p>
+                    <span class="time">{{ message.sent_at|date:"M/d" }}</span>
+                </div>
+            </li>
+            {% if message.is_cancel_research_type and message.is_pending_status %}
+                <li class="right pull-right">
+                    <button type="button" class="btn btn-success btn-status" data-status="1">{% trans "Accept" %}</button>
+                    <button type="button" class="btn btn-warning btn-status" data-status="2">{% trans "Reject" %}</button>
+                </li>
+            {% endif %}
+        </ul>
+    </form>
+</body>
+
+<script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".btn-status").bind("click", ".contact-message-body", function () {
+            $("#id_status").val($(this).data("status"));
+            $("#message_detail_form").submit();
+        });
+
+        if($("#is_send").val() == 'True'){
+            window.parent.$.colorbox.close();
+        }
+    });
+</script>
+</html>

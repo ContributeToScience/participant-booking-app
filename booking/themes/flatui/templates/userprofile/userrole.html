@@ -1,0 +1,72 @@
+{% extends "userprofile/base.html" %}
+
+{% load i18n %}
+
+{% block userprofile_tab %}
+<ul class="tabs tabs-inline tabs-top">
+    <li>
+        <a href="{% url "basic_info" user.username %}"><i class="icon-user"></i> {% trans "Basic Info" %}</a>
+    </li>
+    {% if request.session.user_type == "participant" %}
+        <li>
+            <a href="{% url "question_info" user.username %}"><i class="icon-question-sign"></i> {% trans "Question" %}</a>
+        </li>
+    {% endif %}
+    <li>
+        <a href="{% url "account_change_password" %}"><i class="icon-key"></i> {% trans "Change Password" %}</a>
+    </li>
+    <li>
+        <a href="{% url "account_email" %}"><i class="icon-envelope"></i> {% trans "Account Email" %}</a>
+    </li>
+    <li class="active">
+        <a href="{% url "userrole" %}"><i class="icon-exchange"></i> {% trans "User Role" %}</a>
+    </li>
+    <li>
+        <a href="{% url "account" %}"><i class="icon-remove-sign"></i> {% trans "Delete Account" %}</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block userprofile_panel %}
+    <ul class="stats user-role-auto">
+        <li class="{% if request.session.user_type == "participant" %}satgreen{% else %}lightgrey{% endif %}">
+            <a href="{% url "switch_userrole" "participant" %}">
+                <i class="icon-beaker"></i>
+                <div class="details">
+                    <span class="big">{% trans "Participant" %}</span>
+                    {% if request.session.user_type == "participant" %}
+                        <span>{% trans "Has landed" %}</span>
+                    {% else %}
+                        <span>{% trans "Not logged in" %}</span>
+                    {% endif %}
+                </div>
+            </a>
+        </li>
+        <li class="{% if request.session.user_type == "scientist" %}satgreen{% else %}lightgrey{% endif %}">
+            <a href="{% url "switch_userrole" "scientist" %}">
+                <i class="icon-user-md"></i>
+                <div class="details">
+                    <span class="big">{% trans "Scientist" %}</span>
+                    {% if request.session.user_type == "scientist" %}
+                        <span>{% trans "Has landed" %}</span>
+                    {% else %}
+                        <span>{% trans "Not logged in" %}</span>
+                    {% endif %}
+                </div>
+            </a>
+        </li>
+        <li class="{% if request.session.user_type == "department" %}satgreen{% else %}lightgrey{% endif %}">
+            <a href="{% url "switch_userrole" "department" %}">
+                <i class="icon-hospital"></i>
+                <div class="details">
+                    <span class="big">{% trans "Department" %}</span>
+                    {% if request.session.user_type == "department" %}
+                        <span>{% trans "Has landed" %}</span>
+                    {% else %}
+                        <span>{% trans "Not logged in" %}</span>
+                    {% endif %}
+                </div>
+            </a>
+        </li>
+    </ul>
+{% endblock %}

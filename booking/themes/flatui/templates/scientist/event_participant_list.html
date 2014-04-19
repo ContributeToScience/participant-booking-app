@@ -1,0 +1,126 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+{% load custom_participant_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist_research_list" %}">{% trans "Research List" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "research_event_list" research.id %}">{% trans "Manage events" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Event participants" %}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="row-fluid">
+            <div class="box box-color box-bordered">
+                <div class="box-title">
+                    <h3>
+                        <i class="icon-table"></i>{% trans "Participant List" %}
+                    </h3>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th><input id="select_all" type="checkbox" class="icheck-me" data-skin="square"
+                                   data-color="blue"></th>
+                        <th>{% trans "Participant" %}</th>
+                        <th>{% trans "Rating" %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in participant_list %}
+                        <tr>
+                            <td><input name="participant_id" type="checkbox" class="icheck-me"
+                                       data-skin="square"
+                                       data-color="blue" value="{{ item.id }}"></td>
+                            <td>{% show_participant_name research item %}</td>
+                            <td>
+                                <div class="rating" data-research-id="{{ research.id }}"
+                                     data-user-id="{{ item.participant.id }}"></div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/plugins/jquery-raty/jquery.raty.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("div.rating").raty({
+                path: '{{ STATIC_URL }}css/plugins/jquery-raty/img',
+                number: 3,
+                hints: ['10 minutes late', 'few minutes late', 'great participant'],
+                cancel: true,
+                cancelHint: 'did not take the experiment seriously',
+                readOnly: true,
+                score: function () {
+                    var score = 0;
+                    var count = 0;
+                    var research_id = $(this).attr("data-research-id");
+                    var user_id = $(this).attr("data-user-id");
+                    $.ajax({
+                        url: "/rating/get_participant_score/",
+                        type: "POST",
+                        dataType: "json",
+                        async: false,
+                        data: {"research_id": research_id, "user_id": user_id},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            if (result.status == 'success') {
+                                score = result.score;
+                                count = result.count;
+                            }
+                        }
+                    });
+                    $(this).parent().css("min-width", "145px");
+                    $(this).wrap("<div class=\"row\">" +
+                            "<div class=\"span5\"></div>" +
+                            "<div class=\"span7\" style=\"line-height: 24px;\">X" + count + "</div>" +
+                            "</div>");
+                    return score;
+                }
+            });
+
+            $("#select_all").click(function () {
+                var is_checked = true;
+                if ($(this).parent().hasClass("checked")) {
+                    is_checked = false;
+                }
+                $("input[name='participant_id']").each(function () {
+                    $(this).attr("checked", is_checked);
+                    if (is_checked) {
+                        $(this).parent().addClass("checked");
+                    } else {
+                        $(this).parent().removeClass("checked");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div class="row">
+        <div class="span9">
+            {% block main %}{% endblock %}
+        </div>
+        <div class="span3">
+            <div class="well">
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="nav-header">{% trans "Profile" %}</li>
+                    <li>
+                        <a href="{% url 'account_change_password' %}">{% trans "Change Password" %}</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'account_email' %}">{% trans "Account Email" %}</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'socialaccount_connections' %}">{% trans "Social Account Connections" %}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+

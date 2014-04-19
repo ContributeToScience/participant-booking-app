@@ -1,0 +1,101 @@
+{% load i18n %}
+
+<div class="row-fluid research">
+    <!-- Research meta -->
+    <div class="box box-color box-bordered green">
+        <div class="box-title">
+            <h3>
+                <i class="icon-tint"></i>
+                {{ research.name }}
+            </h3>
+
+            <div class="actions">
+                <a data-id="{{ research.id }}" href="#" class="btn btn-mini content-remove research_delete"><i
+                        class="icon-remove"></i></a>
+                <a href="#" class="btn btn-mini content-slideUp"><i class="icon-angle-down"></i></a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div class="span5">
+                <h6>{% trans "Name" %}: <a href="{% url "research_detail" research.id %}">{{ research.name }}</a></h6>
+
+                <p>{% trans "Location" %}: {{ research.location.address }}</p>
+
+                <p>{% trans "Duration" %}: {{ research.start }} - {{ research.end }}</p>
+
+                <p>{% trans "Remuneration for taking part" %}: {{ research.currency }} {{ research.remuneration }}</p>
+
+                <p>{% if research.ethical_permission %}<i class="icon-ok"></i>
+                    {% else %}<i class="icon-remove"></i>{% endif %}
+                    {% trans "Ethical permission granted to do study" %}
+                </p>
+
+                <p>{% if not research.ethical_permission %}{{ research.non_ethical_permission_reason }}{% endif %}</p>
+
+                <p>{% trans "Payment" %}: {% if research.is_paid %}<i class="icon-paypal" title="{% trans 'Have paid for paypal' %}"></i>{% endif %} {{ research.total_credit }}</p>
+            </div>
+            <div class="span5">
+                <p>{% trans "Description" %}: {{ research.description }}</p>
+
+                <p>{% trans "Experimenter's bio" %}: <b>{% trans "TBD" %}</b></p>
+
+                <p>{% trans "'Good Researcher' reputation, tests so far conducted" %} <b>{% trans "TBD" %}</b></p>
+
+                <p>{% trans "Number of participants needed" %} {{ research.need_participant_num }}</p>
+
+                <p>{% trans "Any restrictions on who can do study" %} <b>{% trans "TBD" %}</b></p>
+
+                <p>{% trans "Created" %} <b>{{ research.created }}</b></p>
+            </div>
+            <div class="span2">
+                {% if not research.is_complete %}
+                    <p>
+                        <a data-id="{{ research.id }}" class="btn btn-lightred toggle_publish btn_un_publish"
+                           style="display: {% if research.is_publish %}inline-block{% else %}none{% endif %}">
+                            <i class="icon-signout"></i>
+                            {% trans "Un-Publish" %}
+                        </a>
+                        <a data-id="{{ research.id }}" class="btn btn-lightred toggle_publish btn_publish"
+                           style="display: {% if research.is_publish %}none{% else %}inline-block{% endif %}">
+                            <i class="icon-signin"></i>
+                            {% trans "Publish" %}
+                        </a>
+                    </p>
+
+                    <p>
+                        <a href="{% url "scientist_research_edit" research.id %}" class="btn btn-satgreen">
+                            <i class="icon-edit"></i>
+                            {% trans "Edit" %}
+                        </a>
+                    </p>
+                {% endif %}
+
+                <p>
+                    <a href="{% url "research_copy" research.id %}" class="btn btn-blue">
+                        <i class="icon-copy"></i>
+                        {% trans "Copy" %}
+                    </a>
+                </p>
+
+
+                {% if not research.is_complete %}
+                    <p>
+                        <a href="{% url "research_event_list" research.id %}" class="btn btn-orange">
+                            <i class="icon-calendar"></i>
+                            {% trans "Manage events" %}
+                        </a>
+                    </p>
+
+                    {% if research.is_paid %}
+                        <p>
+                            <a id="btn_complete" href="{% url "update_complete_status" research.id %}" class="btn btn-inverse">
+                                <i class="icon-edit"></i>
+                                {% trans "Complete" %}
+                            </a>
+                        </p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

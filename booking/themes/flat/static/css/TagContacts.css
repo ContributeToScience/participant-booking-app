@@ -1,0 +1,123 @@
+﻿body {
+}
+
+.contacts-line-wrapper {
+    margin: 0px;
+    padding: 3px 0px 0px 3px;
+    list-style: none;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    line-height: 0px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+    -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+    -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+    transition: border linear 0.2s, box-shadow linear 0.2s;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.contacts-line-wrapper li {
+    vertical-align: middle;
+    padding: 0px;
+    margin: 0px 3px 3px 0px;
+    display: inline-block;
+}
+
+.contacts-line-wrapper li.contacts-line-tag {
+    padding: 0px 4px 0px 8px;
+    line-height: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: default;
+    white-space: nowrap;
+    overflow: hidden;
+    /* btn-primary */
+    color: #222;
+    /*text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);*/
+    background-color: lightgrey;
+    *background-color: lightgrey;
+    background-image: -moz-linear-gradient(top, lightgrey, lightgrey);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(lightgrey), to(lightgrey));
+    background-image: -webkit-linear-gradient(top, lightgrey, lightgrey);
+    background-image: -o-linear-gradient(top, lightgrey, lightgrey);
+    background-image: linear-gradient(to bottom, lightgrey, lightgrey);
+    background-repeat: repeat-x;
+    border-color: #0044cc #0044cc #002a80;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    /*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);*/
+}
+
+.contacts-line-wrapper li.contacts-line-tag i {
+    margin-left: 3px;
+    opacity: 0.8;
+    cursor: pointer;
+    -moz-transition: opacity linear 0.2s;
+    -o-transition: opacity linear 0.2s;
+    -webkit-transition: opacity linear 0.2s;
+    transition: opacity linear 0.2s;
+}
+
+.contacts-line-wrapper li.contacts-line-tag i:hover {
+    opacity: 1;
+}
+
+.contacts-line-wrapper li.contacts-line-input-wrapper {
+    height: 28px;
+}
+
+.contacts-line-wrapper li.contacts-line-input-wrapper input {
+    display: block;
+    border: none;
+    padding: 4px 0px 4px 2px;
+    margin: 0px;
+    outline: none;
+    line-height: 20px;
+    height: 20px;
+}
+
+.contacts-line-dropdown {
+    position: absolute;
+}
+
+.contacts-line-dropdown li a {
+    padding: 3px 20px 3px 10px !important;
+    height: 50px;
+    cursor: default;
+}
+
+.contacts-line-dropdown li a:hover {
+    color: inherit;
+    background: none;
+    filter: initial;
+}
+
+.contacts-line-dropdown li a img {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: none;
+}
+
+.contacts-line-dropdown li a div {
+    margin-left: 58px;
+}
+
+.contacts-line-dropdown li a .display-name {
+    line-height: 26px;
+}
+
+.contacts-line-dropdown li a .email {
+    line-height: 20px;
+    color: #999999;
+}
+
+.contacts-line-dropdown li.active a .email {
+    line-height: 20px;
+    color: #FFFFFF;
+}
+

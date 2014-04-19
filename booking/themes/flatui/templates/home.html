@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% load i18n bootstrap_toolkit util_tags gmap_tags donate_tags %}
+{% load staticfiles %}
+
+{% block navbar %}
+    <ul class="nav">
+        <li><a href="#what-to-expect">{% trans "What to Expect" %}</a></li>
+        <li><a href="#studies-in-your-area">{% trans "Studies in your area" %}</a></li>
+        <li><a href="#web-studies">{% trans "Online Studies You Can Do Now" %}</a></li>
+        <li><a href="#register-buttons">{% trans "Sign Up" %}</a></li>
+        <li><a href="#honesty-statement">{% trans "Honesty Statement" %}</a></li>
+    </ul>
+{% endblock %}
+
+{% block extra_js %}
+
+    <script type="text/javascript">
+        $(function () {
+            vjs('home_video', {
+                plugins: {
+                    resolutions: true
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block before_content %}
+    <div id="watch-video">
+        <div class="container">
+            <div class="video-media">
+                {% comment %}<img src="{{ STATIC_URL }}images/img01.jpg" alt="" />{% endcomment %}
+                <video id="home_video" controls preload="none" poster="{{ STATIC_URL }}images/video_cover.png"
+                       width="556" height="312" class="video-js vjs-default-skin vjs-big-play-centered">
+                    <source src="http://www.opensourcesci.com/temp/Contribute%20to%20science_w%20changes.mp4"
+                            type='video/mp4' data-res="HD">
+                    <source src="{{ STATIC_URL }}video.mp4" type='video/mp4' data-res="SD" data-default="true">
+                    <source src="{{ STATIC_URL }}video.webm" type='video/webm'>
+                    <p> You browser cannot play this video</p>
+                </video>
+            </div>
+        </div>
+    </div><!-- end watch-video -->
+{% endblock %}
+
+{% block content %}
+    <div id="home-content">
+        <section id="what-to-expect" class="clearfix">
+            <h2>{% trans "What to expect" %}</h2>
+
+            <div class="clearfix"></div>
+            <div id="video-blogs" class="clearfix">
+                <div class="current-playing">
+                    <h3>{% trans "Video Blogs" %}</h3>
+
+                    <div class="play-frame">
+                        <img src="{{ STATIC_URL }}images/video-holder.jpg" width="512" height="287" alt=""/>
+                    </div>
+                    <p>
+                        "{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." %}"</p>
+                </div>
+                <div class="play-list">
+                    <ul class="list-unstyled clearfix">
+                        <li><img src="{{ STATIC_URL }}images/img02.jpg" width="203" height="113" alt=""/></li>
+                        <li class="even"><img src="{{ STATIC_URL }}images/img03.jpg" width="203" height="113" alt=""/>
+                        </li>
+                        <li><img src="{{ STATIC_URL }}images/img03.jpg" width="203" height="113" alt=""/></li>
+                        <li class="even"><img src="{{ STATIC_URL }}images/img03.jpg" width="203" height="113" alt=""/>
+                        </li>
+                        <li><img src="{{ STATIC_URL }}images/img03.jpg" width="203" height="113" alt=""/></li>
+                        <li class="even"><img src="{{ STATIC_URL }}images/img03.jpg" width="203" height="113" alt=""/>
+                        </li>
+                        <li class="last-row"><img src="{{ STATIC_URL }}images/img03.jpg" width="203" height="113"
+                                                  alt=""/></li>
+                        <li class="even last-row"><img src="{{ STATIC_URL }}images/img03.jpg" width="203" height="113"
+                                                       alt=""/></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="studies-in-your-area">
+            <h2>{% trans "Studies in your area" %}</h2>
+
+            <div class="clearfix"></div>
+            <div class="map">
+                <div class="map-inner">
+                    {% mark_all_researches %}
+                </div>
+            </div>
+        </section>
+
+        <section id="register-buttons" class="clearfix">
+            <article class="button1 clearfix">
+                <img class="icon" src="{{ STATIC_URL }}images/icon-take-part-in.png" width="205" height="215"
+                     alt="Contribute to Science"/>
+
+                <div>
+                    <a href="{% url "participant_signup" %}"
+                       class="btn btn-default">{% trans "Take Part in Research" %}</a>
+
+                    <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." %}</p>
+                </div>
+            </article>
+            <article class="button2 clearfix">
+                <img class="icon" src="{{ STATIC_URL }}images/icon-recruit.png" width="144" height="156" alt=""/>
+
+                <div>
+                    <a href="{% url "scientist_signup" %}"
+                       class="btn btn-default">{% trans "Recruit Participants" %}</a>
+
+                    <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." %}</p>
+                </div>
+            </article>
+            <article class="button3 clearfix">
+                <img class="icon" src="{{ STATIC_URL }}images/icon-co-ordinate.png" width="134" height="217" alt=""/>
+
+                <div>
+                    <a href="{% url "department_signup" %}"
+                       class="btn btn-default">{% trans "Co-ordinate Research" %}</a>
+
+                    <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." %}</p>
+                </div>
+            </article>
+        </section>
+
+
+        <section id="web-studies" class="clearfix">
+            <h2>{% trans "Web Studies you can do now" %}</h2>
+
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="span4 col1">
+                    <img src="{{ STATIC_URL }}images/img04.jpg" width="309" height="207" alt=""/>
+
+                    <h3>{% trans "Filantropic studies" %}</h3>
+                    <h4>{% trans "University of Albakerky" %}</h4>
+
+                    <div class="earn">{% trans "Earn 18 $" %}</div>
+                    <p>
+                        "{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est" %}</p>
+                </div>
+                <div class="span4 mid">
+                    <img src="{{ STATIC_URL }}images/img04.jpg" width="309" height="207" alt=""/>
+
+                    <h3>{% trans "Filantropic studies" %}</h3>
+                    <h4>{% trans "University of Albakerky" %}</h4>
+
+                    <div class="earn">{% trans "Earn 18 $" %}</div>
+                    <p>
+                        "{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est" %}</p>
+                </div>
+                <div class="span4">
+                    <img src="{{ STATIC_URL }}images/img04.jpg" width="309" height="207" alt=""/>
+
+                    <h3>{% trans "Filantropic studies" %}</h3>
+                    <h4>{% trans "University of Albakerky" %}</h4>
+
+                    <div class="earn">{% trans "Earn 18 $" %}</div>
+                    <p>
+                        "{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est" %}</p>
+                </div>
+            </div>
+            <a href="#" class="more">{% trans "More studies" %}</a>
+        </section>
+
+        <section id="donate">
+            <h2>{% trans "Donate" %}</h2>
+
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="span4 col1">
+                    <img class="icon" src="{{ STATIC_URL }}images/ship.png" alt=""/>
+
+                    <h3>{% trans "Targets" %}</h3>
+
+                    <div class="scale">
+                        <img src="{{ STATIC_URL }}images/target-scale.png" alt=""/>
+
+                        <div class="value" style="height: 60px;"></div>
+                    </div>
+                    <span class="donations-fees">{% trans "(donations fees)" %}</span>
+                </div>
+                <div class="span4 col2">
+                    <div class="donations">
+                        <img class="icon" src="{{ STATIC_URL }}images/pig.png" alt=""/>
+
+                        <h3>{% trans "Donations" %}</h3>
+                        <span class="price">$<span class="odometer">{% donated_total %}</span></span>
+                    </div>
+                    <div class="hosting-fees">
+                        <img class="icon" src="{{ STATIC_URL }}images/icon-hosting.png" alt=""/>
+
+                        <h3>{% trans "Hosting fees &amp; costs" %}</h3>
+                        <span class="price">$<span
+                                class="odometer">{{ 'hosting_fees_and_costs'|donate_setting|default_if_none:0 }}</span></span>
+                    </div>
+                </div>
+                <div class="span4 col3">
+                    <p>{% trans "This app relies" %}<br/>{% trans "on donations" %}</p>
+
+                    <form action="{{ action }}" method="post">
+                        <input id="id_business" name="business" type="hidden" value="{{ business }}">
+                        <input id="id_item_name" name="item_name" type="hidden" value="booking">
+                        <input id="id_notify_url" name="notify_url" type="hidden" value="{{ notify_url }}">
+                        <input id="id_return_url" name="return" type="hidden" value="{{ return_url }}">
+                        <input id="id_cancel_return" name="cancel_return" type="hidden" value="{{ cancel_return }}">
+                        <input id="id_invoice" name="invoice" type="hidden">
+                        <input id="id_cmd" name="cmd" type="hidden" value="_xclick">
+                        <input id="id_charset" name="charset" type="hidden" value="utf-8">
+                        <input id="id_currency_code" name="currency_code" type="hidden" value="USD">
+                        <input id="id_no_shipping" name="no_shipping" type="hidden" value="1">
+                        <input id="id_custom" name="custom" type="hidden" value="donate">
+                        <input type="text" id="id_amount" name="amount" class="form-control"
+                               data-positive-integer-required="true" placeholder="Type the amount for donation"/>
+                        <button type="submit" name="submit"
+                                class="btn btn-default btn-lg btn-block">{% trans "Donate" %}</button>
+                    </form>
+                    <img class="bill-add" src="{{ STATIC_URL }}images/bill-add.png" width="129" height="103" alt=""/>
+                    <img class="paypal" src="{{ STATIC_URL }}images/paypal.png" width="135" height="41" alt=""/>
+                    <img class="credit-cards" src="{{ STATIC_URL }}images/credit-cards.png" width="209" height="31"
+                         alt=""/>
+                </div>
+            </div>
+        </section>
+
+        <section id="honesty-statement">
+            <img class="statement" src="{{ STATIC_URL }}images/honesty-statement.png" width="354" height="352" alt=""/>
+
+            <p>{% trans "We are scientists. We built this app out of our love of science. We believe there are a lot of people out there who love science just like us!" %}</p>
+
+            <h3>{% trans "Our goals are, to" %}:</h3>
+
+            <p>
+                - {% trans "make it easy for anyone to contribute to science." %}<br/>
+                - {% trans "speed up scientific discovery by making it easy for the scientist to recruit participants" %}
+                <br/>
+                - {% trans "sponsor new science" %}<br/>
+                - {% trans "do so in a just and fair way." %}<br/>
+            </p>
+
+            <p>{% trans "We fund this app via donation and by charging a fee for business related research. For example, you can choose to donate to us some of the money scientists reimburse you for doing their research." %}</p>
+        </section>
+    </div><!-- end home-content -->
+{% endblock %}

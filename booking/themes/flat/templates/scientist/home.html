@@ -1,0 +1,47 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div id="main">
+        <div class="page-header">
+            <h1>{% trans "Scientist" %}</h1>
+        </div>
+        <div class="breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <h2>{% trans "What do you want to do ?" %}</h2>
+            <ul class="tiles">
+                <li class="green long">
+                    <a href="{% url 'scientist_research_add' %}">
+                        <span>
+                            <i class="icon-plus"></i>
+                        </span>
+                        <span class="name">{% trans "Create a study" %}</span>
+                    </a>
+                </li>
+                <li class="blue long">
+                    <a href="{% url 'scientist_research_list' %}">
+                        <span>
+                            <i class="icon-phone"></i>
+                        </span>
+                        <span class="name">{% trans "Manage studies" %}</span>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+{% endblock %}

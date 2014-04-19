@@ -1,0 +1,56 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="{{ STATIC_URL }}css/project.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="signup_modal" class="row-fluid">
+        <form id="signup_form" class="form-horizontal" method="POST">
+            {% csrf_token %}
+            <h3>{% trans "Sign up" %}</h3>
+            <div id="signup_error" class="alert alert-error"></div>
+            <div class="control-group required">
+                <label class="control-label" for="id_email">
+                    {% trans "E-mail" %}
+                </label>
+                <div class="controls">
+                    <input id="id_email" name="email" placeholder="E-mail address" type="text">
+                </div>
+            </div>
+            <div class="control-group required">
+                <label class="control-label" for="id_username">
+                    {% trans "Username" %}
+                </label>
+                <div class="controls">
+                    <input id="id_username" maxlength="30" name="username" placeholder="Username"
+                    type="text">
+                </div>
+            </div>
+            <div class="control-group required">
+                <label class="control-label" for="id_password1">
+                    {% trans "Password" %}
+                </label>
+                <div class="controls">
+                    <input id="id_password1" name="password1" placeholder="Password" type="password">
+                </div>
+            </div>
+            <div class="control-group required">
+                <label class="control-label" for="id_password2">
+                    {% trans "Password (again)" %}
+                </label>
+                <div class="controls">
+                    <input id="id_password2" name="password2" placeholder="Password" type="password">
+                </div>
+            </div>
+            <input name="user_type" type="hidden" value="{{ user_type }}">
+            <input id="ajax_signup" type="button" value="Sign up" class="btn btn-primary">
+        </form>
+    </div>
+
+    <script src="{{ STATIC_URL }}js/ajax_signup.js"></script>
+</body>
+</html>

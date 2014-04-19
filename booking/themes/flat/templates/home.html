@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="box">
+                <div class="box-title">
+                    <h3>
+                        <i class="icon-reorder"></i>
+                        {% trans "Basic widget" %}
+                    </h3>
+
+                    <div class="actions">
+                        <a href="#" class="btn btn-mini content-refresh"><i class="icon-refresh"></i></a>
+                        <a href="#" class="btn btn-mini content-remove"><i class="icon-remove"></i></a>
+                        <a href="#" class="btn btn-mini content-slideUp"><i class="icon-angle-down"></i></a>
+                    </div>
+                </div>
+                <div class="box-content">
+                    {% trans "Lorem ipsum velit dolor veniam occaecat do eiusmod velit cillum sit. Lorem ipsum laborum sed Duis in in dolor in exercitation irure. Lorem ipsum ad proident ut in mollit id ullamco Ut. Lorem ipsum magna eiusmod in anim deserunt adipisicing. Lorem ipsum ex dolore sint consectetur eu non mollit Ut dolore aliquip anim. Lorem ipsum labore ad Ut Duis Excepteur consequat non. Lorem ipsum ut quis ea dolore esse Duis cillum amet eu officia nostrud. Lorem ipsum dolor aliquip cillum ea ut id pariatur ad aute mollit in qui. Lorem ipsum magna ut consectetur incididunt sed consectetur ut ullamco dolore Excepteur deserunt. Lorem ipsum mollit ad Excepteur dolore non dolor occaecat reprehenderit eiusmod mollit ut Excepteur dolore dolor ex. Lorem ipsum nisi exercitation cillum velit tempor aliqua nisi non. Lorem ipsum enim magna adipisicing do adipisicing aliquip ex pariatur dolore proident fugiat mollit dolor." %}
+                </div>
+            </div>
+        </div>
+        <div class="span6">
+            <h2><a href="{% url "participant_signup" %}"><i
+                    class="icon-beaker"></i> {% trans "I want to take part in research" %}</a></h2>
+
+            <h3><a href="{% url "scientist_signup" %}"><i
+                    class="icon-user-md"></i> {% trans "I am a scientist and want to recruit participants at my institute of learning" %}
+            </a></h3>
+
+            <h3><a href="{% url "department_signup" %}"><i
+                    class="icon-hospital"></i> {% trans "I want to co-ordinate my department's research" %}</a></h3>
+        </div>
+    </div>
+{% endblock %}

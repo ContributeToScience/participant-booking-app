@@ -1,0 +1,57 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load account %}
+{% load url from future %}
+{% load bootstrap_toolkit %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+
+{% block content %}
+    <div class="page-header">
+        <h1>
+            <img src="{{ STATIC_URL }}img/glyphicons/png/glyphicons_043_group.png">
+            {% trans "Sign In" %}
+        </h1>
+    </div>
+
+    {% if user.is_authenticated %}
+        {% include "account/snippets/already_logged_in.html" %}
+    {% else %}
+        <div class="row">
+            <div class="span6">
+                <form class="form-horizontal" method="POST" action="">
+                    {% csrf_token %}
+                    {{ form|as_bootstrap }}
+                    {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                    {% endif %}
+
+                    <div class="control-group">
+                        <div class="controls">
+                            <button type="submit" class="btn btn-primary">{% trans "Sign In" %}</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <p>
+                                <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                                |
+                                <a href="{{ signup_url }}">{% trans "Don't have account?" %}</a>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="span6">
+                {% if socialaccount.providers %}
+                    <p>{% trans "You can login with" %}:</p>
+                    {% include "socialaccount/snippets/provider_list.html" %}
+                    {% include "socialaccount/snippets/login_extra.html" %}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+

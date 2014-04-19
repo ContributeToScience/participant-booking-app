@@ -1,0 +1,248 @@
+{% extends "participant/base.html" %}
+
+{% load i18n bootstrap_toolkit custom_scientist_tags custom_research_tags gmap_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "participant" %}">{% trans "Participant" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Research List" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+
+        <button id="search_slide" class="btn btn-primary" type="button">
+            <i class="icon-search"></i>  {% trans "Search" %}  <i class="icon-angle-down"></i>
+        </button>
+
+        <div class="box box-color box-bordered" data-slide-id="search_slide" style="display: none;">
+            <div class="box-title">
+                <h3><i class="icon-search"></i> {% trans "Search" %}</h3>
+
+                <div class="actions">
+                    <a href="#" class="btn btn-mini content-slideUp"><i class="icon-angle-down"></i></a>
+                </div>
+            </div>
+
+            <div class="box-content nopadding">
+                <input id="study_type" type="hidden" value="{{ study_type }}">
+                <form class="form-horizontal form-bordered" method="POST" action="{% url "research_list" study_type %}">
+                    {% csrf_token %}
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">{% trans "Custom Tag input" %}</label>
+
+                        <div class="controls">
+                            <input id="search_input" name="q" style="margin-left: 0px;" value="{{ q }}">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="keyword">{% trans "Keyword" %}</label>
+
+                        <div class="controls">
+                            <a class="btn btn-info keyword">{% trans "business" %}</a>
+                            <a class="btn btn-info keyword">{% trans "medical" %}</a>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">{% trans "Search" %}</button>
+                        <button class="btn" type="reset">{% trans "Reset" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if study_type == 'all' or study_type == 'ol' or study_type == 'nol' %}
+            <div class="box box-color box-bordered">
+                <div class="box-title">
+                    <h3>
+                        <i class="icon-table"></i>{% trans "Study list" %}
+                    </h3>
+
+                    <div class="actions">
+                        <div class="btn-group">
+                            <a class="btn btn-primary dropdown-toggle" style="color: #fff;" data-toggle="dropdown"
+                               href="#">
+                                {% if study_type == "true" %}
+                                    {% trans "On the web" %}
+                                {% elif study_type == "false" %}
+                                    {% trans "Not on the web" %}
+                                {% else %}
+                                    {% trans "All studies" %}
+                                {% endif %}
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a id="btn_all_studies" href="{% url "research_list" "all" %}">{% trans "All studies" %}</a></li>
+                                <li><a id="btn_on_the_web" href="{% url "research_list" "ol" %}">{% trans "On the web" %}</a></li>
+                                <li><a id="btn_not_on_the_web" href="{% url "research_list" "nol" %}">{% trans "Not on the web" %}</a></li>
+                            </ul>
+                        </div>
+
+                       {% comment %} <a id="btn_randomize" href="#" class="btn">
+                            <i class="icon-random"></i> {% trans "Randomize" %}
+                        </a>{% endcomment %}
+                        <a href="#" class="btn btn-mini content-slideUp"><i class="icon-angle-down"></i></a>
+                    </div>
+                </div>
+
+                <div class="box-content nopadding">
+                    <table class="table table-hover table-nomargin">
+                        <thead>
+                        <tr>
+                            <th>{% trans "Study Name" %}</th>
+                            <th>{% trans "Study Description" %}</th>
+                            <th>{% trans "Scientist" %}</th>
+                            <th>{% trans "Rating" %}</th>
+                            <th>{% trans "Distance" %}</th>
+                            <th>{% trans "Address" %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in paginator.object_list %}
+                            <tr>
+                                <td>
+                                    <a href="https://www.facebook.com/sharer.php?u=http://54.225.90.112/participant/research/{{ item.id }}/"
+                                       title="share this study on facebook" target="_blank" style="font-size: 17px;">
+                                        <i class="icon-facebook-sign"></i>
+                                    </a>
+                                    <a name="participant_research_detail"
+                                       href="{% url "participant_research_detail_modal" item.id %}">
+                                        <button class="btn .btn-large" title="click for more information">
+                                            {{ item.name }}
+                                        </button>
+                                    </a>
+                                </td>
+                                <td>{{ item.description }}</td>
+                                <td>{% get_scientist_name item %}</td>
+                                <td>
+                                    <div class="rating" data-research-id="{{ item.id }}"
+                                         data-user-id="{% get_scientist_id item %}"></div>
+                                </td>
+                                <td>{% get_distance request item %} {% trans "Km" %}</td>
+                                <td><span data-toggle="tooltip"
+                                          title="{{ item.location.address }}">{{ item.location.address|truncatechars:10 }}</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if paginator.num_pages > 1 %}
+                        <div class="pull-right">
+                            {% bootstrap_pagination paginator.object_list %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% elif study_type == 'nol_map' %}
+            <div class="research-map">
+                {% mark_researches research_list %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    <link href="{{ STATIC_URL }}css/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" type="text/css">
+    <link href="{{ STATIC_URL }}css/plugins/tag-it/jquery.tagit.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/plugins/jquery-ui/jquery-ui.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins/tag-it/tag-it.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins/jquery-raty/jquery.raty.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("div.rating").raty({
+                path: '{{ STATIC_URL }}css/plugins/jquery-raty/img',
+                number: 3,
+                hints: ['10 minutes late', 'few minutes late', 'great participant'],
+                cancel: true,
+                cancelHint: 'did not take the experiment seriously',
+                readOnly: true,
+                score: function () {
+                    var score = 0;
+                    var count = 0;
+                    var research_id = $(this).attr("data-research-id");
+                    var user_id = $(this).attr("data-user-id");
+                    $.ajax({
+                        url: "/rating/get_scientist_score/",
+                        type: "POST",
+                        dataType: "json",
+                        async: false,
+                        data: {"research_id": research_id, "user_id": user_id},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            if (result.status == 'success') {
+                                score = result.score;
+                                count = result.count;
+                            }
+                        }
+                    });
+                    $(this).wrap("<div class=\"row-fluid\">" +
+                            "<div class=\"span5\"></div>" +
+                            "<div class=\"span7\" style=\"line-height: 24px;\">X" + count + "</div>" +
+                            "</div>");
+                    return score;
+                }
+            });
+
+            $("span[data-toggle=tooltip]").tooltip();
+
+            $("a[data-toggle=popover]").popover({
+                trigger: "hover"
+            });
+
+            $("#search_input").tagit({
+                //removeConfirmation: true,
+                //availableTags: []
+                //beforeTagAdded: function(){},
+                //afterTagRemoved: function(){}
+                singleFieldDelimiter: " "
+            }).next().attr("style", "margin-left:0px");
+
+            $(".keyword").bind("click", function () {
+                $("#search_input").tagit("createTag", $(this).html());
+            });
+
+            $("a[name='participant_research_detail']").bind("click", function(e){
+                $.colorbox({
+                    href: $(this).attr("href") + "?study_type=" + $("#study_type").val(),
+                    fastIframe: false,
+                    opacity: 0.8,
+                    onComplete: function(){
+                        $('#calendar').fullCalendar('render');
+                    }
+                });
+                return false;
+            });
+
+            $("#search_slide").bind("click", function(){
+                var icon = $(this).find("i:last");
+                $("div[data-slide-id='search_slide']").toggle("slow", function(){
+                    if(icon.hasClass("icon-angle-down")){
+                        icon.removeClass("icon-angle-down");
+                        icon.addClass("icon-angle-up");
+                    }else{
+                        icon.removeClass("icon-angle-up");
+                        icon.addClass("icon-angle-down");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% load i18n %}
+
+<input id="id_address" name="address" type="hidden" value="">
+<input id="id_lng" name="lng" type="hidden" value="{{ location.lng|default_if_none:0 }}">
+<input id="id_lat" name="lat" type="hidden" value="{{ location.lat|default_if_none:0 }}">
+{% for research in research_list %}
+    <input name="marker" type="hidden" value="{{ research.location.lng }},{{ research.location.lat }}">
+{% endfor %}
+<div id="map_canvas" data-target-id="id_location" class="map" style="width: {{ width }}px;height: {{ height }}px;"></div>
+
+<script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
+
+<script type="text/javascript">
+    $(function () {
+        initializeMap("map_canvas", "id_address", "id_lng", "id_lat", "marker");
+    });
+</script>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+{% load i18n account bootstrap_toolkit flatpages %}
+{% load avatar_tags custom_participant_tags custom_message_tags %}
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <title>{% block title %}{% trans "Contribute to Science" %}{% endblock title %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <!-- Apple devices fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <!-- Apple devices fullscreen -->
+    <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css">
+    <!-- Bootstrap responsive -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-responsive.min.css">
+    <!-- Bootstrap slider -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/slider/bootstrap-slider.css">
+    <!-- Bootstrap datepicker -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/datepicker/datepicker.css">
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/jquery-ui/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/jquery-ui/smoothness/jquery.ui.theme.css">
+    <!-- PageGuide -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/pageguide/pageguide.css">
+    <!-- Fullcalendar -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/fullcalendar/fullcalendar.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/fullcalendar/fullcalendar.print.css" media="print">
+    <!-- Colorbox -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/colorbox/colorbox.css">
+    <!-- chosen -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/chosen/chosen.css">
+    <!-- select2 -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/select2/select2.css">
+    <!-- icheck -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/icheck/all.css">
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/odometer-theme-default.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/base-style.css">
+    <!-- Color CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/themes.css">
+    <!-- Custom fonts CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/custom-fonts.css">
+    <!-- Tagsinput -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/tagsinput/jquery.tagsinput.css">
+    <!-- Project CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/project.css">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+	<!--[if lt IE 9]>
+		<script src="{{ STATIC_URL }}js/html5shiv.js"></script>
+		<script src="{{ STATIC_URL }}js/respond.min.js"></script>
+	<![endif]-->
+
+    <!-- jQuery -->
+    <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+    <link href="//vjs.zencdn.net/4.3/video-js.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/video-js-resolutions.css" rel="stylesheet">
+    <script src="{{ STATIC_URL }}js/video-js.js"></script>
+    <script src="{{ STATIC_URL }}js/video-js-resolutions.js"></script>
+
+    {% block extra_css %}{% endblock extra_css %}
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico"/>
+    <!-- Apple devices Homescreen icon -->
+    <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}img/apple-touch-icon-precomposed.png"/>
+    <!-- Grunticon Loader: place this in the head of your page -->
+    <script>
+    /* grunticon Stylesheet Loader | https://github.com/filamentgroup/grunticon | (c) 2012 Scott Jehl, Filament Group, Inc. | MIT license. */
+    window.grunticon=function(e){if(e&&3===e.length){var t=window,n=!(!t.document.createElementNS||!t.document.createElementNS("http://www.w3.org/2000/svg","svg").createSVGRect||!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image","1.1")||window.opera&&-1===navigator.userAgent.indexOf("Chrome")),o=function(o){var r=t.document.createElement("link"),a=t.document.getElementsByTagName("script")[0];r.rel="stylesheet",r.href=e[o&&n?0:o?1:2],a.parentNode.insertBefore(r,a)},r=new t.Image;r.onerror=function(){o(!1)},r.onload=function(){o(1===r.width&&1===r.height)},r.src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="}};
+    grunticon( [ "{{ STATIC_URL }}css/icons.data.svg.css", "{{ STATIC_URL }}css/icons.fallback.css", "{{ STATIC_URL }}css/icons.data.png.css" ] );</script>
+    <noscript><link href="{{ STATIC_URL }}css/icons.fallback.css" rel="stylesheet"></noscript>
+</head>
+<body {% if request.path == "/" %}class="remove-when-production"{% endif %}>
+{% if request.path == "/" %}<img class="under-construction" src="{{ STATIC_URL }}images/under-construction.png" alt="" />{% endif %}
+<div id="top-wrap" class="svg-icon-circleGraphicTop">
+<header>
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span10">
+                <a href="{% url "home" %}" class="logo"><img src="{{ STATIC_URL }}img/logo.png" alt="" /></a>
+                <h1>{% block subject %}{% trans "Contribute to Science" %}{% endblock %}</h1>
+            </div>
+            {% if not user.is_authenticated %}
+                <div class="span2">
+                    {% comment %}<a href="{% url "account_login" %}" class="sign-in">{% trans "Sign in" %}</a>{% endcomment %}
+                    <a href="#" data-target="#loginSignupModal" class="sign-in">{% trans "Sign in" %}</a>
+                </div>
+            {% else %}
+                <div class="span2">
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <div class="avatars">
+                                <img src="{% avatar_url user 27 %}">
+                                {% if user.userprofile %}
+                                    {{ user.userprofile.get_full_name }}
+                                {% else %}
+                                    {{ user.username }}
+                                {% endif %}
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu pull-right" style="width: auto;">
+                            <li><a href="{% url "basic_info" user.username %}">{% trans "Profile" %}</a></li>
+                            <li><a id="logout_link" href="{% url "account_logout" %}">{% trans "Logout" %}</a></li>
+                        </ul>
+                    </div>
+                    <div class="payments">
+                        {% if request.session.user_type == 'participant' %}
+                            <a href="{% url "payment_messages" %}" class="white">{% get_payment_message_count user %} {% trans "payments" %}</a>
+                        {% elif request.session.user_type == 'scientist' %}
+                            <span>{% trans "Balance" %}: {{ user.userprofile.available_balance }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<nav class="navbar">
+    <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </a>
+        <div class="nav-collapse">
+            {% block navbar %}
+                <ul class="nav">
+                    {% if user.is_authenticated %}
+                        {% for role in request.user.userprofile.get_roles %}
+                            <li>
+                                <a href="{% url "switch_userrole" role %}">
+                                    <span>{{ role|capfirst }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                         <li>
+                             <a href="{% url "message_list" "inbox" %}">
+                                 <span>{% trans "Message" %}</span>
+                                 {% if request|get_new_message_count > 0 %}
+                                    <span class="contact-message-unread">
+                                        {{ request|get_new_message_count }}
+                                    </span>
+                                 {% endif %}
+                             </a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.is_staff %}
+                        <li>
+                            <a href="{% url "award_participants" %}">
+                                <span>{% trans "Award participants" %}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url "award_participants_history" %}">
+                                <span>{% trans "Award participants history" %}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url "scientists_payment_history" %}">
+                                <span>{% trans "Scientists payment history" %}</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endblock navbar %}
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+{% block before_content %}{% endblock before_content %}
+</div><!-- end top-wrap -->
+
+
+<div id="content">
+    {% block content %}{% endblock content %}
+</div>
+
+<footer>
+    <div class="top-bg"></div>
+    <div class="container">
+        <h2>{% trans "Contact" %}</h2>
+        <div class="row-fluid">
+            <div class="span3">
+                <address>
+                    {% trans "Address" %}:<br />
+                    {% trans "Ja’n Darc 12" %}<br />
+                    {% trans "Lousane 120000" %}<br />
+                    {% trans "Switzerland CH" %}
+                </address>
+            </div>
+            <div class="span4">
+                <p>
+                    {% trans "Email" %}: <a href="mailto:info@contributetoscience.org">info@contributetoscience.org</a><br />
+                    {% trans "Phone" %}: 1 202 456 7463
+                </p>
+            </div>
+            <div class="span5">
+                <ul class="list-unstyled list-inline">
+                    {% get_flatpages as flatpages %}
+                    {% for page in flatpages %}
+                        <li>
+                            <a href="{{ page.url }}">{{ page.title }}</a>
+                        </li>
+                        {% if not forloop.last %} | {% endif %}
+                    {% endfor %}
+                    {% comment %}<li><a href="#">{% trans "Adout us" %}</a></li>
+                    <li><a href="#">{% trans "Privacy Statement" %}</a></li>
+                    <li><a href="#">{% trans "Terms of Reference" %}</a></li>{% endcomment %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{% if messages %}
+    {% for message in messages %}
+        <input type="hidden" value="{{ message }}">
+    {% endfor %}
+{% endif %}
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+
+<!-- Nice Scroll -->
+<script src="{{ STATIC_URL }}js/plugins/nicescroll/jquery.nicescroll.min.js"></script>
+<!-- jQuery UI -->
+<script src="{{ STATIC_URL }}js/plugins/jquery-ui/jquery.ui.core.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/jquery-ui/jquery.ui.widget.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/jquery-ui/jquery.ui.mouse.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/jquery-ui/jquery.ui.draggable.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/jquery-ui/jquery.ui.resizable.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/jquery-ui/jquery.ui.sortable.min.js"></script>
+<!-- Touch enable for jquery UI -->
+<script src="{{ STATIC_URL }}js/plugins/touch-punch/jquery.touch-punch.min.js"></script>
+<!-- slimScroll -->
+<script src="{{ STATIC_URL }}js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<!-- Bootstrap -->
+<script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+<!-- Bootstrap slider -->
+<script src="{{ STATIC_URL }}js/plugins/slider/bootstrap-slider.js"></script>
+<!-- Bootstrap datepicker -->
+<script src="{{ STATIC_URL }}js/plugins/datepicker/bootstrap-datepicker.js"></script>
+<!-- Bootbox -->
+<script src="{{ STATIC_URL }}js/plugins/bootbox/jquery.bootbox.js"></script>
+<!-- Masked inputs -->
+<script src="{{ STATIC_URL }}js/plugins/maskedinput/jquery.maskedinput.min.js"></script>
+<!-- TagsInput -->
+<script src="{{ STATIC_URL }}js/plugins/tagsinput/jquery.tagsinput.min.js"></script>
+<!-- vmap -->
+<script src="{{ STATIC_URL }}js/plugins/vmap/jquery.vmap.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/vmap/jquery.vmap.world.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/vmap/jquery.vmap.sampledata.js"></script>
+<!-- Flot -->
+<script src="{{ STATIC_URL }}js/plugins/flot/jquery.flot.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/flot/jquery.flot.bar.order.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/flot/jquery.flot.pie.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/flot/jquery.flot.resize.min.js"></script>
+<!-- imagesLoaded -->
+<script src="{{ STATIC_URL }}js/plugins/imagesLoaded/jquery.imagesloaded.min.js"></script>
+<!-- PageGuide -->
+<script src="{{ STATIC_URL }}js/plugins/pageguide/jquery.pageguide.js"></script>
+<!-- FullCalendar -->
+<script src="{{ STATIC_URL }}js/plugins/fullcalendar/custom-fullcalendar.js"></script>
+<!-- Colorbox -->
+<script src="{{ STATIC_URL }}js/plugins/colorbox/jquery.colorbox-min.js"></script>
+<!-- Chosen -->
+<script src="{{ STATIC_URL }}js/plugins/chosen/chosen.jquery.min.js"></script>
+<!-- select2 -->
+<script src="{{ STATIC_URL }}js/plugins/select2/select2.min.js"></script>
+<!-- icheck -->
+<script src="{{ STATIC_URL }}js/plugins/icheck/jquery.icheck.min.js"></script>
+<!-- Validation -->
+<script src="{{ STATIC_URL }}js/plugins/validation/jquery.validate.min.js"></script>
+<script src="{{ STATIC_URL }}js/plugins/validation/additional-methods.min.js"></script>
+<!-- Theme framework -->
+<script src="{{ STATIC_URL }}js/eakroko.min.js"></script>
+<!-- Theme scripts -->
+<script src="{{ STATIC_URL }}js/application.js"></script>
+<!-- Cookie scripts -->
+<script src="{{ STATIC_URL }}js/jquery.cookie.js"></script>
+<script src="{{ STATIC_URL }}js/odometer.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.scrollTo-min.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.inview.js"></script>
+<script src="{{ STATIC_URL }}js/master.js"></script>
+
+<script src="{{ STATIC_URL }}js/message.js"></script>
+<script src="{{ STATIC_URL }}js/ajax_login.js"></script>
+<script src="{{ STATIC_URL }}js/ajax_signup.js"></script>
+<script src="{{ STATIC_URL }}js/ajax_login_signup.js"></script>
+
+<!-- Project scripts -->
+<script src="{{ STATIC_URL }}js/project.js"></script>
+
+{% block extra_js %}{% endblock extra_js %}
+
+</body>
+</html>

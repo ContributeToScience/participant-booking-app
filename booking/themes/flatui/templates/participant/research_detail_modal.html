@@ -1,0 +1,174 @@
+{% load i18n custom_scientist_tags %}
+
+<div class="container-fluid">
+    <form id="research_form" action="{% url "participant_research_detail_modal" research.id %}" method="POST" class='form-horizontal'>
+    {% csrf_token %}
+    <input id="research_id" type="hidden" value="{{ research.id }}">
+    <input name="study_type" type="hidden" value="{{ study_type }}">
+    <div class="row-fluid">
+        <div class="span12">
+            <table class="table table-nomargin">
+                <tbody>
+                <tr>
+                    <td>{% trans "Research Name" %}:</td>
+                    <td>{{ research.name }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Scientist" %}:</td>
+                    <td>{% get_scientist_name research %}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Location" %}:</td>
+                    <td>{{ research.location.address }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Duration" %}:</td>
+                    <td>{{ research.start }} - {{ research.end }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Remuneration for taking part" %}:</td>
+                    <td>{{ research.currency }} {{ research.remuneration }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Ethical permission granted to do study" %}:</td>
+                    <td>{% if research.ethical_permission %}<i class="icon-ok"></i>{% else %}<i class="icon-remove"></i>{% endif %}</td>
+                </tr>
+                {% if not research.ethical_permission %}
+                <tr>
+                    <td>{% trans "Non ethical permission reason" %}:</td>
+                    <td>{{ research.non_ethical_permission_reason }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>{% trans "Description" %}:</td>
+                    <td>{{ research.currency }} {{ research.remuneration }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Experimenter's bio" %}:</td>
+                    <td>{% trans "TBD" %}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "'Good Researcher' reputation, tests so far conducted" %}:</td>
+                    <td>{% trans "TBD" %}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Number of participants needed" %}:</td>
+                    <td>{{ research.need_participant_num }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Any restrictions on who can do study" %}:</td>
+                    <td>{% trans "TBD" %}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Total credit" %}:</td>
+                    <td>{{ research.total_credit }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Reamin credit" %}:</td>
+                    <td>{{ research.remain_credit }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input id="declaration" type="checkbox">
+                        {% trans "Bla Bla bla, this is serious, bla bla bla. I understand this is serious and will do my best to take part" %}
+                    </td>
+                </tr>
+                {% if research.is_on_web %}
+                    <tr>
+                        <td colspan="2">*
+                            {% trans "As this is a web-study, after completing the study, we will be told automatically that you have taken part" %}
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td colspan="2">*
+                        {% if research.is_anonymous %}
+                            {% trans "This is an anonymous research" %}
+                        {% else %}
+                            {% trans "This is not an anonymous research" %}
+                        {% endif %}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="row-fluid" id="calendar"></div>
+            </br>
+            {% if user.is_authenticated %}
+                <div class="custom-form-actions pull-right">
+                    <button type="submit" class="btn btn-primary" data-toggle="popover" data-placement="top"
+                            data-original-title="prompt"
+                            data-content="after your request to take part has been accepted (you will receive an email), you can pick the time-slot you would like to do the study in.">{% trans "Apply to take part" %}</button>
+                    <button id="btn_cancel" type="button" class="btn">{% trans "Cancel" %}</button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        $("#research_form").submit(function(){
+            if(!$("#declaration").is(':checked')){
+                alert("Please check the declaration");
+                return false;
+            }
+        });
+
+        $("button[data-toggle=popover]").popover({
+            trigger: "hover"
+        });
+
+        $("#btn_cancel").bind("click", function(){
+            $.colorbox.close();
+        });
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            firstHour:8,
+            defaultView: 'agendaWeek',
+            editable: false,
+            selectable: false,
+            allDayDefault: false,
+            ignoreTimezone: false,
+            events: function (start, end, callback) {
+                var events = [];
+                $.ajax({
+                    url: "/api/participant/events/",
+                    type: "POST",
+                    dataType: "json",
+                    async: false,
+                    data: {"research_ids": $("#research_id").val()},
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                    },
+                    success: function (result) {
+                        $.each(result, function (index, obj) {
+                            events.push({
+                                id: obj.id,
+                                title: obj.title,
+                                description: obj.description,
+                                start: obj.start,
+                                end: obj.end,
+                                scientist_name: obj.scientist_name,
+                                total_participant_num: obj.total_participant_num,
+                                join_participant_num: obj.join_participant_num
+                            });
+                        });
+                        callback(events);
+                    }
+                });
+            },
+            eventRender: function (event, element) {
+                /*element.tooltip({
+                 title: event.description,
+                 container: 'body'
+                 });*/
+            }
+        });
+    });
+</script>

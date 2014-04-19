@@ -1,0 +1,26 @@
+<ul id="error_list" style="display: none;">
+    {% if form.errors %}
+        {% for field in form.visible_fields %}
+            {% for error in field.errors %}
+                <li data-field-id="id_{{ field.name }}">{{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+</ul>
+
+{% if form.errors %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-warning" data-dismiss="alert">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            {{ error }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+{% endif %}
+
+{% for hidden in form.hidden_fields %}
+    {{ hidden }}
+{% endfor %}

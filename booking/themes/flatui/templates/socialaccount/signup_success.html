@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load bootstrap_toolkit %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>{% trans "Choose user type" %}</h1>
+        </div>
+
+        <form class="signup" id="signup_form" method="post" action="">
+            {% csrf_token %}
+            <select id="id_user_type" name="user_type" class="user-type">
+                <option value="participant">{% trans "Participant" %}</option>
+                <option value="scientist">{% trans "Scientist" %}</option>
+                <option value="department">{% trans "Department" %}</option>
+            </select>
+            <button class="btn btn-primary" type="submit">{% trans "Save" %} &raquo;</button>
+        </form>
+    </div>
+{% endblock %}
+
+

@@ -1,0 +1,17 @@
+# Where the Django project is.
+CELERYBEAT_CHDIR="/home/ec2-user/participant-booking-app/booking/"
+
+# Name of the projects settings module.
+export DJANGO_SETTINGS_MODULE="booking.settings.production"
+
+# Path to celerybeat
+CELERYBEAT="/home/ec2-user/participant-booking-app/booking/manage.py celerybeat"
+
+# Extra arguments to celerybeat
+CELERYBEAT_OPTS="-S djcelery.schedulers.DatabaseScheduler --settings=booking.settings.production"
+
+# %n will be replaced with the nodename.
+CELERYBEAT_LOG_FILE="/home/ec2-user/celery/beat.log"
+CELERYBEAT_PID_FILE="/home/ec2-user/celery/beat.pid"
+
+VIRTUALENV="/home/ec2-user/participant-booking-app/env/"

@@ -1,0 +1,202 @@
+{% extends "department/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div id="main">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department" %}">{% trans "Department" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Manage Scientist" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <form id="choose_form" action="." method="POST" class='form-horizontal'>
+            {% csrf_token %}
+            <div class="row-fluid">
+                <div class="span12">
+                    <table id="scheme_table" class="table table-nomargin">
+                        <tbody>
+                        <tr>
+                            <td>{% trans "Name" %}:</td>
+                            <td>{{ scheme.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Start" %}:</td>
+                            <td>{{ scheme.start|date:"Y-m-d" }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "End" %}:</td>
+                            <td>{{ scheme.end|date:"Y-m-d" }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Location" %}:</td>
+                            <td>{{ scheme.university_department }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Total Credit" %}:</td>
+                            <td>{{ scheme.total_credit }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Remain Credit" %}:</td>
+                            <td>{{ scheme.remain_credit }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="box box-color box-bordered">
+                        <div class="box-title">
+                            <h3>
+                                <i class="icon-table"></i>{% trans "Scientist List" %}
+                            </h3>
+
+                            <div class="actions">
+                                <select name="scheme_id" class="input-large">
+                                    {% for scheme in scheme_list %}
+                                        <option value="{{ scheme.id }}"
+                                                {% if scheme.id == scheme_id %}selected="selected"{% endif %}>{{ scheme.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <a href="{% url "choose_scientist" %}" class="btn"><i
+                                        class="icon-plus-sign"></i> {% trans "Add Scientist" %}</a>
+                                <a id="delete_scientist" href="#" class="btn"><i
+                                        class="icon-minus-sign"></i> {% trans "Delete Scientist" %}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-content nopadding">
+                        <table class="table table-hover table-nomargin">
+                            <thead>
+                            <tr>
+                                <th><input id="select_all" type="checkbox" class="icheck-me" data-skin="square"
+                                           data-color="blue"></th>
+                                <th>{% trans "Scheme" %}</th>
+                                <th>{% trans "Scientist" %}</th>
+                                <th>{% trans "Credits assigned" %}</th>
+                                <th>{% trans "Credits remaining" %}</th>
+                                <th>{% trans "Rating" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in scientist_list %}
+                                <tr>
+                                    <td><input name="scientist_id" type="checkbox" class="icheck-me" data-skin="square"
+                                               data-color="blue" value="{{ item.id }}"></td>
+                                    <td>{{ item.credit_scheme.name }}</td>
+                                    <td>{{ item.scientist.userprofile.get_full_name }}</td>
+                                    <td><input name="assigned_credit" type="text" class="input-mini"
+                                               value="{{ item.assigned_credit }}">&nbsp;<a class="btn btn-assign"><i
+                                            class="icon-edit"></i>{% trans "Assign Credits" %}</a></td>
+                                    <td>{{ item.remain_credit }}</td>
+                                    <td><i class="icon-star"></i><i class="icon-star"></i><i
+                                            class="icon-star-empty"></i></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(function () {
+            $("#select_all").click(function () {
+                var is_checked = true;
+                if ($(this).parent().hasClass("checked")) {
+                    is_checked = false;
+                }
+                var $this = $(this);
+                $("#choose_form input[name='scientist_id']").each(function () {
+                    $(this).attr("checked", is_checked);
+                    if (is_checked) {
+                        $(this).parent().addClass("checked");
+                    } else {
+                        $(this).parent().removeClass("checked");
+                    }
+                });
+            });
+
+            $("#delete_scientist").bind("click", function () {
+                var count = 0;
+                $("#choose_form input[name='scientist_id']").each(function () {
+                    if ($(this).parent().hasClass("checked")) {
+                        count++;
+                    }
+                });
+                if (count <= 0) {
+                    alert("Please select at least one");
+                    return false;
+                } else if (confirm("Can you sure want to delete selected scientist?")) {
+                    $.ajax({
+                        url: "/department/delete_scientist/",
+                        type: "POST",
+                        dataType: "json",
+                        data: $("#choose_form").serialize(),
+                        async: false,
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            //alert(result.status);
+
+                            $("#choose_form input[name='scientist_id']").each(function () {
+                                if ($(this).parent().hasClass("checked")) {
+                                    $(this).closest("tr").remove();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            $(".btn-assign").bind("click", function () {
+                var $this = $(this);
+                var scheme_id = $("select[name='scheme_id']").val();
+                var scientist_id = $this.closest("tr").find("input[name='scientist_id']").val();
+                var assigned_credit = $this.prev("input[name='assigned_credit']").val();
+
+                var pattern = /^\d+$/;
+                if (!pattern.test(assigned_credit)) {
+                    alert("assign credit can only enter numbers");
+                    return false;
+                }
+
+                $.ajax({
+                    url: "/department/assign_credit/",
+                    type: "POST",
+                    dataType: "json",
+                    data: {"scheme_id": scheme_id, "scientist_id": scientist_id, "assigned_credit": assigned_credit},
+                    async: true,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                    },
+                    success: function (result) {
+                        if (result.status == "fail") {
+                            alert(result.reason);
+                            $this.prev("input[name='assigned_credit']").val(result.scientist_assigned_credit);
+                        } else {
+                            $this.prev("input[name='assigned_credit']").val(result.scientist_assigned_credit);
+                            $this.parent().next().html(result.scientist_remain_credit);
+                            $("#scheme_table td:last").html(result.scheme_remain_credit);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

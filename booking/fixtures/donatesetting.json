@@ -1,0 +1,12 @@
+[
+    {
+        "pk": 1,
+        "model": "scientist.donatesetting",
+        "fields": {
+            "value": "0",
+            "modified": "2013-11-29T00:55:47",
+            "key": "hosting_fees_and_costs",
+            "created": "2013-11-27T08:35:41"
+        }
+    }
+]

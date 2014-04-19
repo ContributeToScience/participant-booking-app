@@ -1,0 +1,114 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <h2>{% trans "What do you want to do?" %}</h2>
+
+            <div class="span3">
+                <ul class="tiles">
+                    <li class="green long">
+                        <a href="{% url 'scientist_research_add' %}">
+                        <span>
+                            <i class="icon-plus"></i>
+                        </span>
+                            <span class="name">{% trans "Create a study" %}</span>
+                        </a>
+                    </li>
+                    <li class="blue long">
+                        <a href="{% url 'scientist_research_list' %}">
+                        <span>
+                            <i class="icon-phone"></i>
+                        </span>
+                            <span class="name">{% trans "Manage my studies" %}</span>
+                        </a>
+                    </li>
+                    <li class="blue long">
+                        <a href="{% url 'scientist_scheme_list' %}">
+                        <span>
+                            <i class="icon-phone"></i>
+                        </span>
+                            <span class="name">{% trans "Manage credit schemes I am a part of" %}</span>
+                        </a>
+                    </li>
+                    <li class="blue long">
+                        <a href="{% url 'scientist_payment_record' %}">
+                        <span>
+                            <i class="icon-phone"></i>
+                        </span>
+                            <span class="name">{% trans "Income/Spending record" %}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="span8" id="calendar"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(function () {
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                defaultView: 'agendaWeek',
+                editable: false,
+                selectable: false,
+                allDayDefault: false,
+                ignoreTimezone: false,
+                events: function (start, end, callback) {
+                    var events = [];
+                    $.ajax({
+                        url: '/api/scientist/events/',
+                        dataType: 'json',
+                        async: true,
+                        data: {},
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
+                        },
+                        success: function (result) {
+                            $.each(result, function (index, obj) {
+                                var d_start = $.fullCalendar.parseDate(obj.start);
+                                var d_end = $.fullCalendar.parseDate(obj.end);
+                                events.push({
+                                    id: obj.id,
+                                    title: obj.title,
+                                    description: obj.description,
+                                    start: obj.start,
+                                    end: obj.end
+                                });
+                            });
+                            callback(events);
+                        }
+                    });
+                },
+                eventRender: function (event, element) {
+                    /*element.tooltip({
+                     title: event.description,
+                     container:'body'
+                     });*/
+                }
+            });
+        });
+    </script>
+{% endblock %}

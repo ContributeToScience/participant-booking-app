@@ -1,0 +1,98 @@
+{% extends "department/base.html" %}
+
+{% load i18n bootstrap_toolkit %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department" %}">{% trans "Department" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department_scheme" %}">{% trans "Manage scheme" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "choose_scheme_location" scheme_id %}">{% trans "Choose Location" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Add Location" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <div class="row-fluid">
+            {% include "_errors.html" %}
+            <div class="box">
+                <div class="box-title">
+                    <h3><i class="icon-edit"></i> {% trans "Add Location" %}</h3>
+                </div>
+                <div class="box-content">
+                    <form action="." method="POST" class='form-horizontal'>
+                        {% csrf_token %}
+                        <div class="control-group required">
+                            <label class="control-label" for="id_department">
+                                {% trans "Department" %}
+                            </label>
+
+                            <div class="controls">
+                                <input id="id_department" maxlength="255" name="department" type="text">
+                            </div>
+                        </div>
+                        <div class="control-group required">
+                            <label class="control-label" for="id_university">
+                                {% trans "University" %}
+                            </label>
+
+                            <div class="controls">
+                                <input id="id_university" maxlength="255" name="university" type="text">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="id_address">
+                                {% trans "Location" %}
+                            </label>
+
+                            <div class="controls">
+                                <input data-rule-maxlength="255" id="id_address" name="address" type="text"
+                                       value="{{ form.address.value|default_if_none:"" }}">
+                                <input data-rule-maxlength="255" id="id_lng" name="lng" type="hidden"
+                                       value="{{ form.lng.value|default_if_none:0 }}">
+                                <input data-rule-maxlength="255" id="id_lat" name="lat" type="hidden"
+                                       value="{{ form.lat.value|default_if_none:0 }}">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+                                <div id="map_canvas" data-target-id="id_location" class="google-map"></div>
+                            </div>
+                        </div>
+                        <div class="form-actions-custom">
+                            <button type="submit" class="btn btn-primary">{% trans "Save changes" %}</button>
+                            <a href="{% url "choose_scheme_location" scheme_id %}" class="btn">{% trans "Cancel" %}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            initializeMap("map_canvas", "id_address", "id_lng", "id_lat");
+        });
+    </script>
+{% endblock %}

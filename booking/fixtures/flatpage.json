@@ -1,0 +1,47 @@
+[
+    {
+        "pk": 1,
+        "model": "flatpages.flatpage",
+        "fields": {
+            "registration_required": false,
+            "title": "Adout us",
+            "url": "/about/",
+            "template_name": "",
+            "sites": [
+                1
+            ],
+            "content": "Adout us",
+            "enable_comments": false
+        }
+    },
+    {
+        "pk": 2,
+        "model": "flatpages.flatpage",
+        "fields": {
+            "registration_required": false,
+            "title": "Privacy Statement",
+            "url": "/privacy/",
+            "template_name": "",
+            "sites": [
+                1
+            ],
+            "content": "Privacy Statement",
+            "enable_comments": false
+        }
+    },
+    {
+        "pk": 3,
+        "model": "flatpages.flatpage",
+        "fields": {
+            "registration_required": false,
+            "title": "Terms of Use",
+            "url": "/terms/",
+            "template_name": "",
+            "sites": [
+                1
+            ],
+            "content": "Terms of Use",
+            "enable_comments": false
+        }
+    }
+]

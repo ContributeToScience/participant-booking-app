@@ -1,0 +1,747 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n bootstrap_toolkit %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Create Research" %}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="row-fluid">
+            {% include "_errors.html" %}
+            <div class="box">
+                <div class="box-title">
+                    <h3><i class="icon-edit"></i> {% trans "Research" %}</h3>
+                </div>
+                <div class="box-content">
+                    <form id="research_post_form" action="" method="POST" class='form-horizontal'>
+                        {% csrf_token %}
+
+                        <div class="hero-unit">
+                            <h3><i class="icon-info-sign"></i> {% trans "General information" %}</h3>
+
+                            <div class="control-group required">
+                                <label class="control-label" for="id_name">
+                                    {% trans "Study title" %}
+                                </label>
+                                <div class="controls">
+                                    <input data-rule-maxlength="100" data-rule-required="true" id="id_name"
+                                           name="name" type="text" value="{{ form.name.value|default_if_none:"" }}">
+
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="id_description">
+                                    {% trans "Description" %}
+                                </label>
+                                <div class="controls">
+                                    <textarea cols="40" data-rule-maxlength="1024" id="id_description" name="description"
+                                              rows="10" style="width: 532px;">{{ form.description.value|default_if_none:"" }}</textarea>
+
+                                </div>
+                            </div>
+                            <div class="control-group required">
+                                <label class="control-label" for="id_need_participant_num">
+                                    {% trans "Number of participants needed" %}
+                                </label>
+                                <div class="controls">
+                                    <input data-rule-number="true" data-rule-required="true" id="id_need_participant_num"
+                                           name="need_participant_num" type="number" min="0" step="1"
+                                           data-positive-integer-required="true"
+                                           value="{{ form.need_participant_num.value|default_if_none:"" }}">
+                                </div>
+                            </div>
+
+                            {% if not research_id %}
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <label class="checkbox">
+                                            <input id="id_is_anonymous" name="is_anonymous" type="checkbox"
+                                                   {% if form.is_anonymous.value %}checked="checked"{% endif %}>
+                                            {% trans "Do people who sign up for your study need to remain anonymous to you until you conduct the research?" %}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="hero-unit">
+                            <h3><i class="icon-laptop"></i> {% trans "Web study information" %}</h3>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                    <a class="btn btn-primary">
+                                        <label class="checkbox" style="margin-bottom: 0px;">
+                                            <input id="id_is_on_web" name="is_on_web" type="checkbox"
+                                                   {% if form.is_on_web.value %}checked="checked"{% endif %}>
+                                            {% trans "Is your study web-based?" %}
+                                        </label>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="id_url">
+                                    {% trans "Web url" %}
+                                </label>
+
+                                <div class="controls">
+                                    <input data-rule-maxlength="255" data-rule-url="true" id="id_url" name="url"
+                                           type="text" value="{{ form.url.value|default_if_none:"" }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hero-unit">
+                            <h3><i class="icon-map-marker"></i> {% trans "Location" %}</h3>
+
+                            <div class="control-group">
+                                <label class="control-label" for="id_room">
+                                    {% trans "Room" %}
+                                </label>
+
+                                <div class="controls">
+                                    <input id="id_room" name="room" type="text"
+                                           value="{{ form.room.value|default_if_none:"" }}">
+                                </div>
+                            </div>
+                            <div class="control-group" id="locationGroup">
+                                <label class="control-label" for="id_address">
+                                    {% trans "Location" %}
+                                </label>
+
+                                <div class="controls">
+                                    <input data-rule-maxlength="255" id="id_address" name="address" type="text"
+                                           value="{{ form.address.value|default_if_none:"" }}">
+                                    <input data-rule-maxlength="255" id="id_lng" name="lng" type="hidden"
+                                           value="{{ form.lng.value|default_if_none:0 }}">
+                                    <input data-rule-maxlength="255" id="id_lat" name="lat" type="hidden"
+                                           value="{{ form.lat.value|default_if_none:0 }}">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <div id="map_canvas" data-target-id="id_location" class="google-map"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hero-unit">
+                            <h3><i class="icon-calendar"></i> {% trans "Study start and end dates" %}</h3>
+
+                            <div class="control-group required">
+                                <label class="control-label" for="id_start">
+                                    {% trans "Start date" %}
+                                </label>
+
+                                <div class="controls">
+                                    <input class="datepick" data-date-format="yyyy-mm-dd" data-rule-dateiso="true"
+                                           data-rule-required="true" id="id_start" name="start" type="text"
+                                           value="{{ form.start.value|date:"Y-m-d" }}">
+                                </div>
+                            </div>
+                            <div class="control-group required">
+                                <label class="control-label" for="id_end">
+                                    {% trans "End date" %}
+                                </label>
+
+                                <div class="controls">
+                                    <input class="datepick" data-date-format="yyyy-mm-dd" data-rule-dateiso="true"
+                                           data-rule-required="true" id="id_end" name="end" type="text"
+                                           value="{{ form.end.value|date:"Y-m-d" }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hero-unit">
+                            <h3><i class="icon-gift"></i> {% trans "Remuneration" %}</h3>
+
+                            <div class="control-group required">
+                                <label class="control-label" for="id_payment_type">
+                                    {% trans "Payment type" %}
+                                </label>
+
+                                <div class="controls">
+                                    <select id="id_payment_type" name="payment_type">
+                                        {% for value, text in form.payment_type.field.choices %}
+                                            {% if value %}
+                                                <option value="{{ value }}"
+                                                        {% if value == form.payment_type.value %}selected="selected"{% endif %}>{{ text }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-group required">
+                                <label class="control-label" for="id_total_credit">
+                                    {% trans "Remuneration per person" %}
+                                </label>
+
+                                <div class="controls">
+                                    {% if research_id and is_paid %}
+                                        <input type="text" data-positive-float-required="true" disabled="disabled"
+                                               value="{{ form.total_credit.value|default_if_none:0 }}">
+                                    {% else %}
+                                        <input id="id_total_credit" name="total_credit" type="text"
+                                               data-positive-float-required="true"
+                                               value="{{ form.total_credit.value|default_if_none:0 }}">
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hero-unit">
+                            <div class="control-group">
+                                <h3><i class="icon-exclamation-sign"></i> {% trans "Ethics" %}</h3>
+                            </div>
+
+                            <div class="control-group">
+                                <a class="btn btn-primary">
+                                    <label class="checkbox" style="margin-bottom: 0px;">
+                                        <input id="id_ethical_permission" name="ethical_permission" type="checkbox"
+                                               {% if form.ethical_permission.value %}checked="checked"{% endif %}>
+                                        {% trans "Ethical permission to do study" %}
+                                    </label>
+                                </a>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label" for="id_non_ethical_permission_reason">
+                                    <strong>{% trans "Explain why you do not need ethical permission to do this study" %}</strong>
+                                </label>
+
+                                <div class="controls">
+                                    <textarea id="id_non_ethical_permission_reason" maxlength="255"
+                                              name="non_ethical_permission_reason" rows="5" type="text">{{ form.non_ethical_permission_reason.value|default_if_none:"" }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label" for="id_further_ethical_permisson_info">
+                                    {% trans "Further information relevant to your Ethical permission" %}
+                                </label>
+
+                                <div class="controls">
+                                    <textarea id="id_further_ethical_permisson_info" maxlength="255"
+                                              name="further_ethical_permisson_info" type="text">{{ form.further_ethical_permisson_info.value|default_if_none:"" }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hero-unit">
+                            <div class="control-group">
+                                <h3><i class="icon-exclamation-sign"></i> {% trans "Feedback" %}</h3>
+                            </div>
+
+                            <div class="control-group">
+                                <a class="btn btn-primary">
+                                    <label class="checkbox" style="margin-bottom: 0px;">
+                                        <input id="id_is_feedback_promise" name="is_feedback_promise" type="checkbox"
+                                               {% if form.is_feedback_promise.value %}checked="checked"{% endif %}>
+                                        {% trans "I will provide feedback to my participants about the results of the experiment and whether or not the research was published" %}
+                                    </label>
+                                </a>
+                            </div>
+
+                            <div class="control-group required">
+                                <label class="control-label" for="id_feedback_promise_time">
+                                    {% trans "Feedback promise time" %}
+                                </label>
+
+                                <div class="controls">
+                                    <input class="datepick" data-date-format="yyyy-mm-dd" data-rule-dateiso="true"
+                                           data-rule-required="true" id="id_feedback_promise_time" name="feedback_promise_time" type="text"
+                                           value="{{ form.feedback_promise_time.value|date:"Y-m-d" }}">
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label" for="id_non_feedback_reason">
+                                    <strong>{% trans "Non feedback reason" %}</strong>
+                                </label>
+
+                                <div class="controls">
+                                    <textarea id="id_non_feedback_reason" maxlength="255" name="non_feedback_reason"
+                                              rows="5" type="text">{{ form.non_feedback_reason.value|default_if_none:"" }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hero-unit">
+                            <div class="control-group">
+                                <h3><i class="icon-user"></i> {% trans "Restrictions" %}</h3>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label" for="id_restrictions">
+                                    {% trans "Please specify any restrictions you may have regarding which participants you need to test" %}
+                                </label>
+
+                                <div class="controls">
+                                    <input id="id_restrictions" maxlength="255" name="restrictions" type="text"
+                                           value="{{ form.restrictions.value|default_if_none:"" }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hero-unit">
+                            <div class="control-group">
+                                <h3><i class="icon-calendar"></i> {% trans "Reminders" %}</h3>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                    <label class="checkbox">
+                                        <input id="id_remind_research" name="remind_research" type="checkbox"
+                                               {% if form.remind_research.value %}checked="checked"{% endif %}>
+                                        {% trans "Send experimenter reminder emails" %}
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="remind_scientist_control_group" class="control-group">
+                                <label class="control-label">
+                                    {% trans "Scientist reminders" %}
+                                </label>
+
+                                <div class="controls" style="margin-top: 5px;margin-bottom: 5px;">
+                                    <a id="add_remind_scientist" href="#">{% trans "Add a reminder" %}</a>
+                                </div>
+
+                                {% for rsi in remind_scientist_info %}
+                                    <div class="controls" style="margin-bottom: 10px;">
+                                        <select name="_remind_scientist_type" class="input-small">
+                                            <option value="email"
+                                                    {% if rsi.type == 'email' %}selected="selected"{% endif %}>{% trans "Email" %}</option>
+                                            <option value="sms"
+                                                    {% if rsi.type == 'sms' %}selected="selected"{% endif %}>{% trans "SMS" %}</option>
+                                        </select>
+
+                                        <input name="_remind_scientist_time" class="input-small" type="text"
+                                               value="{{ rsi.time }}" data-positive-integer-required="true">
+
+                                        <select name="_remind_scientist_time_type" class="input-small">
+                                            <option value="minutes"
+                                                    {% if rsi.time_type == 'minutes' %}selected="selected"{% endif %}>{% trans "minutes" %}</option>
+                                            <option value="hours"
+                                                    {% if rsi.time_type == 'hours' %}selected="selected"{% endif %}>{% trans "hours" %}</option>
+                                            <option value="days"
+                                                    {% if rsi.time_type == 'days' %}selected="selected"{% endif %}>{% trans "days" %}</option>
+                                            <option value="weeks"
+                                                    {% if rsi.time_type == 'weeks' %}selected="selected"{% endif %}>{% trans "weeks" %}</option>
+                                        </select>
+
+                                        <input maxlength="255" name="_remind_scientist_message" type="text"
+                                               value="{{ rsi.message }}" placeholder="Reminder content">
+
+                                        <a href="#" class="remind_scientist_remove"><i class="icon-remove"></i></a>
+                                    </div>
+                                {% endfor %}
+
+                                <input id="id_remind_scientist_info" name="remind_scientist_info" type="hidden">
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <label class="checkbox">
+                                        <input id="id_remind_participant" name="remind_participant" type="checkbox"
+                                               {% if form.remind_participant.value %}checked="checked"{% endif %}>
+                                        {% trans "Send participants reminder emails" %}
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="remind_participant_control_group" class="control-group">
+                                <label class="control-label">
+                                    {% trans "Participant reminders" %}
+                                </label>
+
+                                <div class="controls" style="margin-top: 5px;margin-bottom: 5px;">
+                                    <a id="add_remind_participant" href="#">{% trans "Add a reminder" %}</a>
+                                </div>
+
+                                {% for rsi in remind_participant_info %}
+                                    <div class="controls" style="margin-bottom: 10px;">
+                                        <select name="_remind_participant_type" class="input-small">
+                                            <option value="email"
+                                                    {% if rsi.type == 'email' %}selected="selected"{% endif %}>{% trans "Email" %}</option>
+                                            <option value="sms"
+                                                    {% if rsi.type == 'sms' %}selected="selected"{% endif %}>{% trans "SMS" %}</option>
+                                        </select>
+
+                                        <input name="_remind_participant_time" class="input-small" type="text"
+                                               value="{{ rsi.time }}" data-positive-integer-required="true">
+
+                                        <select name="_remind_participant_time_type" class="input-small">
+                                            <option value="minutes"
+                                                    {% if rsi.time_type == 'minutes' %}selected="selected"{% endif %}>{% trans "minutes" %}</option>
+                                            <option value="hours"
+                                                    {% if rsi.time_type == 'hours' %}selected="selected"{% endif %}>{% trans "hours" %}</option>
+                                            <option value="days"
+                                                    {% if rsi.time_type == 'days' %}selected="selected"{% endif %}>{% trans "days" %}</option>
+                                            <option value="weeks"
+                                                    {% if rsi.time_type == 'weeks' %}selected="selected"{% endif %}>{% trans "weeks" %}</option>
+                                        </select>
+
+                                        <input maxlength="255" name="_remind_participant_message" type="text"
+                                               value="{{ rsi.message }}" placeholder="Reminder content">
+
+                                        <a href="#" class="remind_participant_remove"><i class="icon-remove"></i></a>
+                                    </div>
+                                {% endfor %}
+
+                                <input id="id_remind_participant_info" name="remind_participant_info" type="hidden">
+                            </div>
+                        </div>
+
+                        <div class="hero-unit">
+                            <h3><i class="icon-time"></i> {% trans "Event duration" %}</h3>
+
+                            <div class="control-group required">
+                                <label class="control-label" for="id_default_event_duration">
+                                    {{ form.default_event_duration.label }}
+                                </label>
+
+                                <div class="controls">
+                                    <input data-rule-number="true" data-rule-required="true"
+                                           id="id_default_event_duration"
+                                           name="default_event_duration" type="number" min="10" max="360" step="1"
+                                           data-positive-integer-required="true"
+                                           value="{{ form.default_event_duration.value|default_if_none:45 }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <input id="type" name="type" type="hidden" value="edit">
+
+                        <div class="form-actions-custom">
+                            <button id="btn_save" type="button" class="btn btn-satgreen">{% trans "Submit" %}</button>
+                            {#copy including the is publish status#}
+                            {% if type != 'copy' %}
+                                <button id="btn_save_draft" type="button" class="btn btn-blue">{% trans "Save but dont publish yet" %}</button>
+                            {% endif %}
+                            {% if research_id %}
+                                <a href="{% url "research_event_list" research_id %}" class="btn btn-orange">{% trans "Manage events" %}</a>
+                            {% endif %}
+                            <a id="back" href="{% url "scientist" %}" class="btn">{% trans "Back" %}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="template_remind_scientist" class="controls" style="display: none;margin-bottom: 10px;">
+        <select name="_remind_scientist_type" class="input-small">
+            <option value="email" selected="selected">{% trans "Email" %}</option>
+            <option value="sms">{% trans "SMS" %}</option>
+        </select>
+
+        <input name="_remind_scientist_time" class="input-small" type="text" value="0" value="0"
+               data-positive-integer-required="true">
+
+        <select name="_remind_scientist_time_type" class="input-small">
+            <option value="minutes" selected="selected">{% trans "minutes" %}</option>
+            <option value="hours">{% trans "hours" %}</option>
+            <option value="days">{% trans "days" %}</option>
+            <option value="weeks">{% trans "weeks" %}</option>
+        </select>
+
+        <input maxlength="255" name="_remind_scientist_message" type="text" placeholder="Reminder content">
+
+        <a href="#" class="remind_scientist_remove"><i class="icon-remove"></i></a>
+    </div>
+
+    <div id="template_remind_participant" class="controls" style="display: none;margin-bottom: 10px;">
+        <select name="_remind_participant_type" class="input-small">
+            <option value="email" selected="selected">{% trans "Email" %}</option>
+            <option value="sms">{% trans "SMS" %}</option>
+        </select>
+
+        <input name="_remind_participant_time" class="input-small" type="text" value="0" value="0"
+               data-positive-integer-required="true">
+
+        <select name="_remind_participant_time_type" class="input-small">
+            <option value="minutes" selected="selected">{% trans "minutes" %}</option>
+            <option value="hours">{% trans "hours" %}</option>
+            <option value="days">{% trans "days" %}</option>
+            <option value="weeks">{% trans "weeks" %}</option>
+        </select>
+
+        <input maxlength="255" name="_remind_participant_message" type="text" placeholder="Reminder content">
+
+        <a href="#" class="remind_participant_remove"><i class="icon-remove"></i></a>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    <!-- Datepicker -->
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/plugins/datepicker/datepicker.css">
+{% endblock %}
+
+{% block extra_js %}
+    <!-- jQuery UI -->
+
+    <script src="{{ STATIC_URL }}js/plugins/jquery-ui/jquery.ui.spinner.js"></script>
+
+    <!-- Validation -->
+    <script src="{{ STATIC_URL }}js/plugins/validation/jquery.validate.min.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins/validation/additional-methods.min.js"></script>
+    <!-- Form -->
+    <script src="{{ STATIC_URL }}js/plugins/form/jquery.form.min.js"></script>
+    <!-- Wizard -->
+    <script src="{{ STATIC_URL }}js/plugins/wizard/jquery.form.wizard.min.js"></script>
+
+    <!-- Datepicker -->
+    <script src="{{ STATIC_URL }}js/plugins/datepicker/bootstrap-datepicker.js"></script>
+
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            initializeMap("map_canvas", "id_address", "id_lng", "id_lat");
+            setTimeout(initialPage, 2000);
+
+            $("#btn_save").bind("click", function () {
+                $("#type").val("edit");
+                $("#research_post_form").submit();
+            });
+
+            $("#btn_save_draft").bind("click", function () {
+                $("#type").val("draft");
+                $("#research_post_form").submit();
+            });
+
+            $("#id_is_on_web").bind("click", function () {
+                toggle_is_web(this);
+            });
+
+            $("#id_ethical_permission").bind("click", function () {
+                toggle_ethics(this);
+            });
+
+            $("#id_is_feedback_promise").bind("click", function () {
+                toggle_feedback(this);
+            });
+
+            $("#id_remind_research").bind("click", function () {
+                toggle_scientist(this);
+            });
+
+            $("#id_remind_participant").bind("click", function () {
+                toggle_participant(this);
+            });
+
+            $("#add_remind_scientist").bind("click", function(){
+                var $remind_panel = $("#template_remind_scientist").clone();
+                $(this).parents(".control-group").append($remind_panel);
+                $remind_panel.removeAttr("id");
+                $remind_panel.show();
+                checkAddRemind(this);
+                return false;
+            });
+
+            $("#add_remind_participant").bind("click", function(){
+                var $remind_panel = $("#template_remind_participant").clone();
+                $(this).parents(".control-group").append($remind_panel);
+                $remind_panel.removeAttr("id");
+                $remind_panel.show();
+                checkAddRemind(this);
+                return false;
+            });
+
+            $(document).on("click", ".remind_scientist_remove", function () {
+                $(this).parents(".controls").remove();
+                checkAddRemind($("#add_remind_scientist"));
+                return false;
+            });
+
+            $(document).on("click", ".remind_participant_remove", function () {
+                $(this).parents(".controls").remove();
+                checkAddRemind($("#add_remind_participant"));
+                return false;
+            });
+
+            $("form:first").bind("submit", function () {
+                var remind_scientist = new Array();
+                var remind_participant = new Array();
+
+                $("#remind_scientist_control_group div.controls").each(function(){
+                    var remind = {};
+                    var type = $(this).find("select[name='_remind_scientist_type']")[0];
+                    var time = $(this).find("input[name='_remind_scientist_time']")[0];
+                    var time_type = $(this).find("select[name='_remind_scientist_time_type']")[0];
+                    var message = $(this).find("input[name='_remind_scientist_message']")[0];
+
+                    if(type && time && time_type && message){
+                        remind['type'] = $(type).val();
+                        remind['time'] = $(time).val();
+                        remind['time_type'] = $(time_type).val();
+                        remind['message'] = $(message).val();
+                        remind_scientist.push(remind);
+                    }
+                });
+                $("#id_remind_scientist_info").val(JSON.stringify(remind_scientist));
+
+                $("#remind_participant_control_group div.controls").each(function(){
+                    var remind = {};
+                    var type = $(this).find("select[name='_remind_participant_type']")[0];
+                    var time = $(this).find("input[name='_remind_participant_time']")[0];
+                    var time_type = $(this).find("select[name='_remind_participant_time_type']")[0];
+                    var message = $(this).find("input[name='_remind_participant_message']")[0];
+
+                    if(type && time && time_type && message){
+                        remind['type'] = $(type).val();
+                        remind['time'] = $(time).val();
+                        remind['time_type'] = $(time_type).val();
+                        remind['message'] = $(message).val();
+                        remind_participant.push(remind);
+                    }
+                });
+                $("#id_remind_participant_info").val(JSON.stringify(remind_participant));
+            });
+        });
+
+        function initialPage() {
+            toggle_is_web($("#id_is_on_web"));
+            toggle_scientist($("#id_remind_research"));
+            toggle_participant($("#id_remind_participant"));
+            checkAddRemind($("#add_remind_scientist"));
+            checkAddRemind($("#add_remind_participant"));
+            toggle_ethics($("#id_ethical_permission"));
+            toggle_feedback($("#id_is_feedback_promise"));
+        }
+
+        function toggle_scientist(obj) {
+            toggle_display_remind(obj, $("#remind_scientist_control_group"));
+
+        }
+
+        function toggle_participant(obj) {
+            toggle_display_remind(obj, $("#remind_participant_control_group"));
+        }
+
+        function toggle_is_web(obj) {
+            var checked = false;
+            if ($(obj).is(":checked"))checked = true;
+
+            toggle_display_bool(checked, false, $("#id_url"));
+            toggle_location(checked);
+
+            if (checked) {
+                if ($("#id_remind_research").is(":checked")) {
+                    $("#id_remind_research").trigger("click");
+                }
+                if ($("#id_remind_participant").is(":checked")) {
+                    $("#id_remind_participant").trigger("click");
+                }
+
+                $("#id_remind_research").attr("checked", false);
+                $("#id_remind_research").closest("div.control-group").hide();
+
+                $("#id_remind_participant").attr("checked", false);
+                $("#id_remind_participant").closest("div.control-group").hide();
+            } else {
+                $("#id_remind_research").closest("div.control-group").show();
+                $("#id_remind_participant").closest("div.control-group").show();
+            }
+        }
+
+        function toggle_location(checked) {
+            if(checked){
+                $("#id_room").closest("div.hero-unit").hide();
+            }else{
+                $("#id_room").closest("div.hero-unit").show();
+            }
+
+            toggle_display_bool(checked, true, $("#id_address"));
+            toggle_display_bool(checked, true, $("#map_canvas"));
+            toggle_display_bool(checked, true, $("#id_room"));
+        }
+
+        function toggle_ethics(obj) {
+            var $target = $("#id_non_ethical_permission_reason");
+            var $div = $target.closest("div.control-group");
+
+            if ($(obj).is(":checked")) {
+                $target.val("");
+                $div.hide();
+            } else {
+                $div.show();
+            }
+        }
+
+        function toggle_feedback(obj) {
+            var $reason = $("#id_non_feedback_reason");
+            var $time = $("#id_feedback_promise_time");
+            var $reason_div = $reason.closest("div.control-group");
+            var $time_div = $time.closest("div.control-group");
+
+            if ($(obj).is(":checked")) {
+                $reason.val("");
+                $reason_div.hide();
+                $time_div.show();
+            } else {
+                $time.val("");
+                $reason_div.show();
+                $time_div.hide();
+            }
+        }
+
+        function toggle_display_bool(checked, inverse, target, value) {
+            var reveal = false;
+            if (checked && !inverse)reveal = true;
+            else if (!checked && inverse)reveal = true;
+
+            var $div = $(target).closest("div.control-group");
+
+            if (reveal) {
+                $div.show();
+            }
+            else {
+                $(target).val(value != undefined ? value : "");
+                $div.hide();
+            }
+        }
+
+        function toggle_display(obj, target, value) {
+            var $div = $(target).closest("div.control-group");
+            if ($(obj).is(":checked")) {
+                $div.show();
+            } else {
+                $(target).val(value != undefined ? value : "");
+                $div.hide();
+            }
+        }
+
+        function toggle_display_remind(obj, target){
+            if ($(obj).is(":checked")) {
+                $(target).show();
+            } else {
+                $(target).find("div.controls").each(function(){
+                    $(this).find("a[class*='_remove']").click();
+                });
+                $(target).hide();
+            }
+        }
+
+        function checkAddRemind(obj) {
+            if($(obj).parents("div.control-group").find("div.controls").length >= 4){
+                $(obj).hide();
+                return false;
+            }else{
+                $(obj).show();
+                return true;
+            }
+        }
+    </script>
+{% endblock %}

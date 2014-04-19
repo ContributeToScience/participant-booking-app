@@ -1,0 +1,43 @@
+<!-- Third party script for BrowserPlus runtime (Google Gears included in Gears runtime now) -->
+<script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
+<!-- Load plupload and all it's runtimes -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/plupload/plupload.full.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        var uploader = new plupload.Uploader({
+            runtimes: "gears,html5,flash,silverlight,browserplus",
+            browse_button: "upload_avatar",
+            max_file_size: "1mb",
+            multi_selection: false,
+            url: "{% url 'upload_avatar' %}",
+            flash_swf_url: "{{ STATIC_URL }}js/plupload/plupload.flash.swf",
+            silverlight_xap_url: "{{ STATIC_URL }}js/plupload/plupload.silverlight.xap",
+            filters: [
+                {title: "Image files", extensions: "jpg,gif,png"}
+            ],
+            headers: {
+                "ACCEPT": "application/json",
+                "X-CSRFToken": $.cookie("csrftoken")
+            }
+        });
+
+        uploader.init();
+
+        uploader.bind("FilesAdded", function (up, files) {
+            up.start();
+            up.refresh(); // Reposition Flash/Silverlight
+        });
+
+        uploader.bind("Error", function (up, err) {
+            alert(err.message);
+            up.refresh(); // Reposition Flash/Silverlight
+        });
+
+        uploader.bind("FileUploaded", function (up, file, response) {
+            var obj = $.parseJSON(response.response);
+            $("img.avatar").attr("src", obj.thumbnail_url);
+        });
+
+    });
+</script>

@@ -1,0 +1,30 @@
+# Name of nodes to start, here we have a single node
+CELERYD_NODES="booking-node"
+# or we could have three nodes:
+#CELERYD_NODES="w1 w2 w3"
+
+# Where to chdir at start.
+CELERYD_CHDIR="/home/ec2-user/participant-booking-app/booking/"
+
+# Python interpreter from environment.
+ENV_PYTHON="/home/ec2-user/participant-booking-app/env/bin/python"
+
+# How to call "manage.py celeryd_multi"
+CELERYD_MULTI="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryd_multi"
+
+# How to call "manage.py celeryctl"
+CELERYCTL="$ENV_PYTHON $CELERYD_CHDIR/manage.py celeryctl"
+
+# Extra arguments to celeryd
+CELERYD_OPTS="--time-limit=86400 --concurrency=1 --settings=booking.settings.production"
+
+# %n will be replaced with the nodename.
+CELERYD_LOG_FILE="/home/ec2-user/celery/%n.log"
+CELERYD_PID_FILE="/home/ec2-user/celery/%n.pid"
+
+# Workers should run as an unprivileged user.
+CELERYD_USER="ec2-user"
+CELERYD_GROUP="apache"
+
+# Name of the projects settings module.
+export DJANGO_SETTINGS_MODULE="booking.settings.production"

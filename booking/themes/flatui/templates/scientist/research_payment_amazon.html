@@ -1,0 +1,30 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+{% load custom_participant_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist_research_list" %}">{% trans "Research List" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Research Payment Paypal" %}</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- TODO amazon payment stuff -->
+    </div>
+{% endblock %}

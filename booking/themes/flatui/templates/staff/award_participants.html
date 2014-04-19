@@ -1,0 +1,177 @@
+{% extends "participant/base.html" %}
+
+{% load i18n bootstrap_toolkit util_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Award to participants" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+
+        <form id="award_participant_form" action="." method="POST" class='form-horizontal'>
+            {% csrf_token %}
+            <input id="payment_type" name="payment_type" type="hidden" value="">
+            <input id="paypal_type" name="paypal_type" type="hidden" value="">
+            <div class="row-fluid">
+                <div class="box box-color box-bordered">
+                    <div class="box-title">
+                        <h3>
+                            <i class="icon-table"></i>{% trans "Award participant list" %}
+                        </h3>
+
+                        <div class="actions">
+                            <div class="btn-group">
+                                <a class="btn btn-primary dropdown-toggle" style="color: #fff;" data-toggle="dropdown"
+                                   href="#">
+                                    {% if payment_type == "paypal" %}
+                                        {% trans "Paypal" %}
+                                    {% elif payment_type == "amazon" %}
+                                        {% trans "Amazon" %}
+                                    {% else %}
+                                        {% trans "All payment" %}
+                                    {% endif %}
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a id="btn_all_payment" href="#">{% trans "All payment" %}</a></li>
+                                    <li><a id="btn_paypal" href="#">{% trans "Paypal" %}</a></li>
+                                    <li><a id="btn_amazon" href="#">{% trans "Amazon" %}</a></li>
+                                </ul>
+                            </div>
+                            {% comment %}<a id="btn_batch_mass_pay" class="btn"><i class="icon-money"></i> {% trans "MassPay" %}</a>{% endcomment %}
+                            <a id="btn_batch_adaptive_pay" class="btn"><i class="icon-money"></i> {% trans "AdaptivePay" %}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-content nopadding">
+                    <table class="table table-hover table-nomargin">
+                        <thead>
+                        <tr>
+                            <th><input id="select_all" type="checkbox" class="icheck-me" data-skin="square"
+                                       data-color="blue"></th>
+                            <th>{% trans "Study" %}</th>
+                            <th>{% trans "Participant" %}</th>
+                            <th>{% trans "Award" %}</th>
+                            <th>{% trans "Award datetime" %}</th>
+                            <th>{% trans "Action" %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in award_participant_list %}
+                            <tr>
+                                <td><input name="award_participant_id" type="checkbox" class="icheck-me" data-skin="square"
+                                           data-color="blue" value="{{ item.id }}"></td>
+                                <td>{{ item.research.name }}</td>
+                                <td>{{ item.participant.userprofile.get_full_name }}</td>
+                                <td>{% subtract item.award_credit item.donate_credit %}</td>
+                                <td>{{ item.scientist_award_dt|date:"Y-m-d H:i:s" }}</td>
+                                <td>
+                                    {% comment %}
+                                    <a name="btn_mass_pay" data-participant-id="{{ item.id }}" class="btn btn-success">
+                                        <i class="icon-money"></i> {% trans "MassPay" %}
+                                    </a>
+                                    {% endcomment %}
+                                    <a name="btn_adaptive_pay" data-participant-id="{{ item.id }}" class="btn btn-success">
+                                        <i class="icon-money"></i> {% trans "AdaptivePay" %}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#select_all").click(function () {
+                var is_checked = true;
+                if ($(this).parent().hasClass("checked")) {
+                    is_checked = false;
+                }
+                $("#award_participant_form input[name='award_participant_id']").each(function () {
+                    if (!$(this).attr("disabled")) {
+                        $(this).attr("checked", is_checked);
+                        if (is_checked) {
+                            $(this).parent().addClass("checked");
+                        } else {
+                            $(this).parent().removeClass("checked");
+                        }
+                    }
+                });
+            });
+
+            $("#award_participant_form a[name='btn_mass_pay']").bind("click", function () {
+                $("#paypal_type").val("MassPay");
+                payment(this);
+            });
+
+            $("#award_participant_form a[name='btn_adaptive_pay']").bind("click", function () {
+                $("#paypal_type").val("AdaptivePay");
+                payment(this);
+            });
+
+            $("#btn_batch_mass_pay").bind("click", function () {
+                $("#paypal_type").val("MassPay");
+                batch_payment();
+            });
+
+            $("#btn_batch_adaptive_pay").bind("click", function () {
+                $("#paypal_type").val("AdaptivePay");
+                batch_payment();
+            });
+
+            $("#btn_all_payment").bind("click", function () {
+                $("#payment_type").empty();
+                $("form:first").submit();
+            });
+
+            $("#btn_paypal").bind("click", function () {
+                $("#payment_type").val("paypal");
+                $("form:first").submit();
+            });
+
+            $("#btn_amazon").bind("click", function () {
+                $("#payment_type").val("amazon");
+                $("form:first").submit();
+            });
+        });
+
+        function payment(obj) {
+            var $checkbox = $(obj).closest("tr").find("input[name='award_participant_id']");
+            $checkbox.attr("checked", true);
+            //$checkbox.parent().addClass("checked");
+            $("#award_participant_form").submit();
+        }
+
+        function batch_payment() {
+            var count = 0;
+            $("#award_participant_form input[name='award_participant_id']").each(function () {
+                if ($(this).parent().hasClass("checked")) {
+                    count++;
+                }
+            });
+            if (count <= 0) {
+                alert("Please select at least one");
+                return false;
+            } else {
+                $("#award_participant_form").submit();
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "department/base.html" %}
+
+{% load i18n %}
+
+{% block extra_css %}
+    <link href="{{ STATIC_URL }}css/plugins/tagsinput/jquery.tagsinput.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department" %}">{% trans "Department" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department_scheme" %}">{% trans "Manage scheme" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Choose Location" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="box box-color box-bordered">
+                    <div class="box-title">
+                        <h3>
+                            <i class="icon-table"></i>{% trans "Location List" %}
+                        </h3>
+
+                        <div class="actions">
+                            <a href="{% url "add_scheme_location" scheme_id %}" class='btn'><i
+                                    class="icon-plus-sign"></i> {% trans "Add Location" %}</a>
+                        </div>
+                    </div>
+                </div>
+                <form id="choose_form" action="." method="POST" class='form-horizontal'>
+                    {% csrf_token %}
+                    <div class="box-content nopadding">
+                        <table class="table table-hover table-nomargin">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>{% trans "University" %}</th>
+                                <th>{% trans "Department" %}</th>
+                                <th>{% trans "Address" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for location in location_list %}
+                                <tr>
+                                    <td><input name="location_id" type="checkbox" class='icheck-me' data-skin="square"
+                                               data-color="blue" value="{{ location.id }}"
+                                               {% if location.id == selected_location_id %}checked="checked" {% endif %}>
+                                    </td>
+                                    <td>{{ location.university }}</td>
+                                    <td>{{ location.department }}</td>
+                                    <td>{{ location.address }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="form-actions pull-right">
+                            <button id="save_choose" type="submit"
+                                    class="btn btn-primary">{% trans "Save changes" %}</button>
+                            <a href="{% url "department_scheme" %}" class="btn">{% trans "Cancel" %}</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(function () {
+            $("#choose_form").submit(function () {
+                var count = 0;
+                var location_id;
+                $("#choose_form input[name='location_id']").each(function () {
+                    if ($(this).parent().hasClass("checked")) {
+                        location_id = $(this).val();
+                        count++;
+                    }
+                });
+                if (count <= 0) {
+                    alert("Please select at least one");
+                    return false
+                } else if (count > 1) {
+                    alert("Can only choose one");
+                    return false;
+                } else {
+                    $("#choose_form").attr("action", "/department/{{ scheme_id }}/choose_location/?location_id=" + location_id);
+                    return true;
+                }
+            });
+        });
+    </script>
+{% endblock %}

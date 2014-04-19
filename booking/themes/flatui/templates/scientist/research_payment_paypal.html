@@ -1,0 +1,47 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+{% load custom_participant_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist_research_list" %}">{% trans "Research List" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Research Payment Paypal" %}</a>
+                </li>
+            </ul>
+        </div>
+
+        {% if not research.is_paid %}
+            <ul class="messages">
+                <li class="left">
+                    <div class="image">
+                        {{ form }}
+                    </div>
+                    <div class="message" style="margin-left: 200px;background: #d1e5f8;">
+                        <span class="caret" style="border-right: 7px solid #d1e5f8;"></span>
+                        <span class="name">{% trans "Notification" %}</span>
+                        <p>{% trans "Total amount" %}: {{ research.total_credit }}</p>
+                        <p>{% trans "Balance" %}: {{ request.user.userprofile.available_balance }}</p>
+                        <p>{% trans "You will pay all paypal fees." %}</p>
+                        <span class="time">
+                        </span>
+                    </div>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

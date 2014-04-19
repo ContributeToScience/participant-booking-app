@@ -1,0 +1,59 @@
+{% extends "participant/base.html" %}
+
+{% load i18n bootstrap_toolkit custom_scientist_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "participant" %}">{% trans "Participant" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Take part credit scheme" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="box box-color box-bordered">
+                <div class="box-title">
+                    <h3>
+                        <i class="icon-table"></i>{% trans "Take part credit scheme list" %}
+                    </h3>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th>{% trans "Credit scheme Name" %}</th>
+                        <th>{% trans "Department" %}</th>
+                        <th>{% trans "Location" %}</th>
+                        <th>{% trans "Start" %}</th>
+                        <th>{% trans "End" %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in credit_scheme_list %}
+                        <tr>
+                            <td>{{ item.credit_scheme.name }}</td>
+                            <td>{{ item.credit_scheme.department.userprofile.get_full_name }}</td>
+                            <td>{{ item.credit_scheme.university_department.address }}</td>
+                            <td>{{ item.credit_scheme.start|date:"Y-m-d" }}</td>
+                            <td>{{ item.credit_scheme.end|date:"Y-m-d" }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

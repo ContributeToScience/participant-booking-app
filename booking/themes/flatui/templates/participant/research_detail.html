@@ -1,0 +1,139 @@
+{% extends "participant/base.html" %}
+
+{% load i18n custom_scientist_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "participant" %}">{% trans "Participant" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Research Detail" %}</a>
+                </li>
+            </ul>
+        </div>
+        <form id="research_form" action="." method="POST" class='form-horizontal'>
+        {% csrf_token %}
+        <div class="row-fluid">
+            <div class="span12">
+                <table class="table table-nomargin">
+                    <tbody>
+                    <tr>
+                        <td>{% trans "Research Name" %}:</td>
+                        <td>{{ research.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Scientist" %}:</td>
+                        <td>{% get_scientist_name research %}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Location" %}:</td>
+                        <td>{{ research.location.address }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Duration" %}:</td>
+                        <td>{{ research.start }} - {{ research.end }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Remuneration for taking part" %}:</td>
+                        <td>{{ research.currency }} {{ research.remuneration }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Ethical permission granted to do study" %}:</td>
+                        <td>{% if research.ethical_permission %}<i class="icon-ok"></i>{% else %}<i class="icon-remove"></i>{% endif %}</td>
+                    </tr>
+                    {% if not research.ethical_permission %}
+                    <tr>
+                        <td>{% trans "Non ethical permission reason" %}:</td>
+                        <td>{{ research.non_ethical_permission_reason }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td>{% trans "Description" %}:</td>
+                        <td>{{ research.currency }} {{ research.remuneration }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Experimenter's bio" %}:</td>
+                        <td>{% trans "TBD" %}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "'Good Researcher' reputation, tests so far conducted" %}:</td>
+                        <td>{% trans "TBD" %}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Number of participants needed" %}:</td>
+                        <td>{{ research.need_participant_num }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Any restrictions on who can do study" %}:</td>
+                        <td>{% trans "TBD" %}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Total credit" %}:</td>
+                        <td>{{ research.total_credit }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Reamin credit" %}:</td>
+                        <td>{{ research.remain_credit }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input id="declaration" type="checkbox">
+                            {% trans "Bla Bla bla, this is serious, bla bla bla. I understand this is serious and will do my best to take part" %}
+                        </td>
+                    </tr>
+                    {% if research.is_on_web %}
+                        <tr>
+                            <td colspan="2">*
+                                {% trans "As this is a web-study, after completing the study, we will be told automatically that you have taken part" %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <td colspan="2">*
+                            {% if research.is_anonymous %}
+                                {% trans "This is an anonymous research" %}
+                            {% else %}
+                                {% trans "This is not an anonymous research" %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                {% if user.is_authenticated %}
+                    <div class="custom-form-actions pull-right">
+                        <button type="submit" class="btn btn-primary" data-toggle="popover" data-placement="top"
+                            data-original-title="prompt"
+                            data-content="after your request to take part has been accepted (you will receive an email), you can pick the time-slot you would like to do the study in.">{% trans "Apply to take part" %}</button>
+                        <a href="{% url "participant" %}" class="btn">{% trans "Cancel" %}</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(function(){
+            $("#research_form").submit(function(){
+                if(!$("#declaration").is(':checked')){
+                    alert("Please check the declaration");
+                    return false;
+                }
+            });
+
+            $("button[data-toggle=popover]").popover({
+                trigger: "hover"
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "department/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div id="main">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department" %}">{% trans "Department" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "department_participant_list" %}">{% trans "Manage Participant" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Choose Participant" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+        <form id="choose_form" action="." method="POST" class='form-horizontal'>
+            {% csrf_token %}
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="box box-color box-bordered">
+                        <div class="box-title">
+                            <h3>
+                                <i class="icon-table"></i>{% trans "Participant List" %}
+                            </h3>
+
+                            <div class="actions">
+                                <select name="scheme_id" class="input-large">
+                                    {% for scheme in scheme_list %}
+                                        <option value="{{ scheme.id }}">{{ scheme.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-content nopadding">
+                        <table class="table table-hover table-nomargin">
+                            <thead>
+                            <tr>
+                                <th><input id="select_all" type="checkbox" class='icheck-me' data-skin="square"
+                                           data-color="blue"></th>
+                                <th>{% trans "Name" %}</th>
+                                <th>{% trans "Email" %}</th>
+                                <th>{% trans "Last login" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in user_list %}
+                                <tr>
+                                    <td><input name="user_id" type="checkbox" class='icheck-me' data-skin="square"
+                                               data-color="blue" value="{{ user.id }}"></td>
+                                    <td>{{ user.userprofile.get_full_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.last_login|date:"Y-m-d" }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="form-actions pull-right">
+                            <button id="save_choose" type="submit"
+                                    class="btn btn-primary">{% trans "Save changes" %}</button>
+                            <a href="{% url "department_participant_list" %}" class="btn">{% trans "Cancel" %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(function () {
+            $('#select_all').click(function () {
+                var is_checked = true;
+                if ($(this).parent().hasClass("checked")) {
+                    is_checked = false
+                }
+                $this = $(this)
+                $("#choose_form input[name='user_id']").each(function () {
+                    $(this).attr("checked", is_checked);
+                    if (is_checked) {
+                        $(this).parent().addClass("checked");
+                    } else {
+                        $(this).parent().removeClass("checked");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

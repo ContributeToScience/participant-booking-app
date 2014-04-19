@@ -1,0 +1,30 @@
+[
+    {
+        "pk": 1,
+        "model": "socialaccount.socialapp",
+        "fields": {
+            "name": "Facebook",
+            "sites": [
+                1
+            ],
+            "secret": "ff17391e1dd5dbb292320321c793c282",
+            "client_id": "1396216280621125",
+            "key": "",
+            "provider": "facebook"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "socialaccount.socialapp",
+        "fields": {
+            "name": "Twitter",
+            "sites": [
+                1
+            ],
+            "secret": "gpowqTTOkPKHcGaQRmToLxPOEP3rIHyRrJ0JMAY",
+            "client_id": "EwOiB9SRCzNpfWEWzswRgQ",
+            "key": "",
+            "provider": "twitter"
+        }
+    }
+]

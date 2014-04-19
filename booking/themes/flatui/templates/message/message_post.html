@@ -1,0 +1,114 @@
+{% load i18n bootstrap_toolkit %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% trans "Contribute to Science" %}{% endblock title %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <!-- Apple devices fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <!-- Apple devices fullscreen -->
+    <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css">
+    <!-- Bootstrap responsive -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-responsive.min.css">
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/base-style.css">
+    <!-- Color CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/themes.css">
+    <!-- Project CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/project.css">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+	<!--[if lt IE 9]>
+		<script src="js/html5shiv.js"></script>
+		<script src="js/respond.min.js"></script>
+	<![endif]-->
+
+    {% block extra_css %}{% endblock extra_css %}
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico"/>
+    <!-- Apple devices Homescreen icon -->
+    <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}img/apple-touch-icon-precomposed.png"/>
+</head>
+
+<body class="contact-message-body">
+    <form id="send_message" method="POST" action="." class="form-horizontal">
+        {% csrf_token %}
+
+        <input id="is_send" type="hidden" value="{{ is_send }}">
+        <input id="id_content_object_id" name="content_object_id" type="hidden" value="{{ form.content_object_id.value }}">
+        <input id="id_recipient_id" name="recipient_id" type="hidden" value="{{ form.recipient_id.value }}">
+        <input id="id_type" name="type" type="hidden" value="{{ form.type.value }}">
+        <input id="id_message_id" name="message_id" type="hidden" value="{{ form.message_id.value }}">
+
+        <div class="control-group required">
+            <div class="controls">
+                {% include "_errors.html" %}
+            </div>
+        </div>
+
+        <div class="control-group required">
+            <label class="control-label" for="subject" style="text-align: left;width: 70px;">
+                {% trans "Subject" %}:
+            </label>
+
+            <div class="controls" style="margin-left: 70px;line-height: 30px;">
+                {% if form.type.value == 1 %}
+                    {% trans "Request to cancel the study" %}
+                    <input name="subject" type="hidden" value="Request to cancel the study">
+                {% elif form.type.value == 2 %}
+                    {% trans "Feedback" %}
+                    <input name="subject" type="hidden" value="Feedback">
+                {% elif form.type.value == 3 %}
+                    {% trans "Report Bug" %}
+                    <input name="subject" type="hidden" value="Report Bug">
+                {% else %}
+                    <input id="id_subject" name="subject" type="text" maxlength="60" style="width: 350px;"
+                           value="{{ form.subject.value|default_if_none:"" }}">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="control-group required">
+            <div class="controls" style="margin-left: 70px;">
+                <label class="checkbox">
+                    <input type="checkbox" name="send_email" {% if form.send_email.value %}checked="checked"{% endif %}> {% trans "Send Email" %}
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group required">
+            <label class="control-label" for="content" style="text-align: left;width: 70px;">
+                {% trans "Message" %}:
+            </label>
+
+            <div class="controls" style="margin-left: 70px;">
+                <textarea id="id_content" name="content" rows="5" maxlength="1024" style="width: 420px;">{{ form.content.value|default_if_none:"" }}</textarea>
+                <button id="btn_send" type="submit" class="btn btn-success">{% trans "Send" %}</button>
+            </div>
+        </div>
+    </form>
+
+<script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        {% comment %}var type = $("#id_type").val();
+        var recipient_id = $("#id_recipient_id").val();
+        var message_id = $("#message_id").val();
+        if(type == '2'){
+            var $target = $(window.parent.document).find("a[data-recipient-id='"+recipient_id+"'][data-type='"+type+"']");
+            $target.attr("data-message-id", message_id);
+        }{% endcomment %}
+        if($("#is_send").val() == 'True'){
+            window.parent.$.colorbox.close();
+        }
+    });
+</script>
+</body>
+</html>

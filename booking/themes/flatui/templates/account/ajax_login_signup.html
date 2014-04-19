@@ -1,0 +1,114 @@
+{% load i18n %}
+{% load socialaccount %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="{{ STATIC_URL }}css/project.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="box">
+    <div class="box-content">
+        <ul class="minitiles" style="margin-left: 190px;">
+            <li class="blue">
+                <a href="{% provider_login_url "facebook" next="/socialaccount/signup/success/" %}" method="oauth2">
+                    <span><i class="icon-facebook"></i></span>
+                </a>
+            </li>
+            <li class="green">
+                <a href="{% provider_login_url "twitter" next="/socialaccount/signup/success/" %}">
+                    <span><i class="icon-twitter"></i></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span5">
+        <div id="" class="row-fluid">
+            <form id="login_form" class="form-validate" method="POST" action="{% url "ajax_login_signup" %}">
+                {% csrf_token %}
+                <h4 class="text-center">{% trans "Login" %}</h4>
+
+                <div id="login_error" class="alert alert-error"></div>
+                <div class="control-group">
+                    <div class="email controls">
+                        <input type="text" id="id_login" name="login" placeholder="Email address or Username" data-rule-required="true" data-rule-email="true">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="pw controls">
+                        <input type="password" id="id_password" name="password" placeholder="Password" data-rule-required="true">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="controls">
+                        <select name="user_type">
+                            <option value="participant">{% trans "Participant" %}</option>
+                            <option value="scientist">{% trans "Scientist" %}</option>
+                            <option value="department">{% trans "Department" %}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group text-center">
+                    <div class="controls">
+                        <input type="checkbox" id="remember" name="remember" class="icheck-me" data-skin="square" data-color="blue"> {% trans "Remember me" %}
+                    </div>
+                </div>
+
+                <div class="submit text-center">
+                    <input type="hidden" name="type" value="login">
+                    <input id="ajax_login" type="button" value="Sign me in" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="span2">
+        <hr class="vertical-line">
+    </div>
+    <div class="span5">
+        <div id="" class="row-fluid">
+            <form id="signup_form" class="form-validate" method="POST" action="{% url "ajax_login_signup" %}">
+                {% csrf_token %}
+                <h4 class="text-center">{% trans "Sign up" %}</h4>
+
+                <div id="signup_error" class="alert alert-error"></div>
+                <div class="control-group required">
+                    <div class="controls">
+                        <input id="id_email" name="email" placeholder="E-mail address" type="text">
+                    </div>
+                </div>
+                <div class="control-group required">
+                    <div class="controls">
+                        <input id="id_username" maxlength="30" name="username" placeholder="Username"
+                               type="text">
+                    </div>
+                </div>
+                <div class="control-group required">
+                    <div class="controls">
+                        <input id="id_password1" name="password1" placeholder="Password" type="password">
+                    </div>
+                </div>
+                <div class="control-group required">
+                    <div class="controls">
+                        <input id="id_password2" name="password2" placeholder="Verify password" type="password">
+                    </div>
+                </div>
+
+                <div class="submit text-center">
+                    <input name="user_type" type="hidden" value="{{ user_type }}">
+                    <input type="hidden" name="type" value="signup">
+                    <input id="ajax_signup" type="button" value="Sign up" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{{ STATIC_URL }}js/ajax_login_signup.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% load i18n bootstrap_toolkit custom_message_tags %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Message" %}</a>
+                </li>
+            </ul>
+            <div class="close-bread">
+                <a href="#"><i class="icon-remove"></i></a>
+            </div>
+        </div>
+
+        <div class="box box-bordered box-color contact-message">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-envelope">
+                    </i>
+                    {% trans "Message Center" %}
+                </h3>
+            </div>
+
+            <div class="box-content nopadding">
+                <div class="row-fluid">
+                    <div class="span2">
+                        <ul class="tabs tabs-inline tabs-left">
+                            {% comment %}<li class="write hidden-480">
+                                <a href="#">
+                                    {% trans "Write message" %}
+                                </a>
+                            </li>{% endcomment %}
+                            <li {% if message_flag == "inbox" %}class="active"{% endif %}>
+                                <a href="{% url "message_list" "inbox" %}">
+                                    <i class="icon-inbox">
+                                    </i>
+                                    {% trans "Inbox" %}
+                                    {% if request|get_new_message_count > 0 %}
+                                        <strong>({{ request|get_new_message_count }})</strong>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li {% if message_flag == "outbox" %}class="active"{% endif %}>
+                                <a href="{% url "message_list" "outbox" %}">
+                                    <i class="icon-share-alt">
+                                    </i>
+                                    {% trans "Outbox" %}
+                                </a>
+                            </li>
+                            <li {% if message_flag == "trash" %}class="active"{% endif %}>
+                                <a href="{% url "message_list" "trash" %}">
+                                    <i class="icon-trash">
+                                    </i>
+                                    {% trans "Trash" %}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="span10">
+                        <div class="tab-content tab-content-inline">
+                            {% include "message/_tpl/inbox.html" %}
+                            {% include "message/_tpl/outbox.html" %}
+                            {% include "message/_tpl/trash.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(function () {
+
+        });
+    </script>
+{% endblock %}

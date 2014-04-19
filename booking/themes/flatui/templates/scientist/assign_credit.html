@@ -1,0 +1,78 @@
+{% extends "scientist/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <div id="main" class="container-fluid">
+        <div class="page-header breadcrumbs">
+            <ul>
+                <li>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist" %}">{% trans "Scientist" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "scientist_research_list" %}">{% trans "Research List" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="{% url "research_detail" research.id %}">{% trans "Research Detail" %}</a>
+                    <i class="icon-angle-right"></i>
+                </li>
+                <li>
+                    <a href="#">{% trans "Assign credit" %}</a>
+                </li>
+            </ul>
+        </div>
+        <form id="choose_form" action="." method="POST" class='form-horizontal'>
+            {% csrf_token %}
+            <input type="hidden" name="research_id" value="{{ research.id }}">
+
+            <div class="row-fluid">
+                <div class="span12">
+                    <table id="scheme_table" class="table table-nomargin">
+                        <tbody>
+                        {% for participant in participant_list %}
+                            <tr style="background-color: #6495ed;">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{% trans "Participant name" %}: {{ participant.participant.userprofile.get_full_name }}<input type="hidden"
+                                                                                                  name="participant_id"
+                                                                                                  value="{{ participant.id }}">
+                                </td>
+                                <td>{% trans "Award credit" %}: {{ participant.award_credit }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>{% trans "Assign each credit" %}: <input id="assign_credit" name="assign_credit"
+                                                                         value="0" style="margin-left: 5px;"
+                                                                         data-positive-float-required="true">
+                            </td>
+                            <td>{% trans "Assign total credit" %}: <span id="assign_total_credit">0.0</span></td>
+                            <td>{% trans "Research remain credit" %}: {{ research.remain_credit }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-actions pull-right">
+                        <button type="submit" class="btn btn-primary">{% trans "Save changes" %}</button>
+                        <button type="button" class="btn">{% trans "Cancel" %}</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#assign_credit").bind("keyup", function(){
+                var credit = $(this).val();
+                var count = $("#scheme_table").find("tr").length - 1;
+                $("#assign_total_credit").html((credit >= 0 ? credit : 0) * count);
+            });
+        });
+    </script>
+{% endblock %}
