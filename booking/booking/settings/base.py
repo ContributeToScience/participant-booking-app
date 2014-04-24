@@ -308,21 +308,21 @@ CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 MAXMIND_CITY_DB_PATH = normpath(join(SITE_ROOT, '../data/GeoLiteCity.dat'))
 
-PAYPAL_RECEIVER_EMAIL = get_env_setting('PAYPAL_RECEIVER_EMAIL')
-SITE_NAME = get_env_setting('SITE_NAME')
-PAYPAL_API_USERNAME = get_env_setting('PAYPAL_API_USERNAME')
-PAYPAL_API_PASSWORD = get_env_setting('PAYPAL_API_PASSWORD')
-PAYPAL_API_SIGNATURE = get_env_setting('PAYPAL_API_SIGNATURE')
-PAYPAL_API_ENVIRONMENT = get_env_setting('PAYPAL_API_ENVIRONMENT')
-PAYPAL_APPLICTION_ID = get_env_setting('PAYPAL_APPLICTION_ID')
-PAYPAL_ACTION = get_env_setting('PAYPAL_ACTION')
-PAYPAL_SERVICE = get_env_setting('PAYPAL_SERVICE')
+PAYPAL_RECEIVER_EMAIL = environ.get('PAYPAL_RECEIVER_EMAIL', '')
+SITE_NAME = environ.get('SITE_NAME', 'booking')
+PAYPAL_API_USERNAME = environ.get('PAYPAL_API_USERNAME', '')
+PAYPAL_API_PASSWORD = environ.get('PAYPAL_API_PASSWORD', '')
+PAYPAL_API_SIGNATURE = environ.get('PAYPAL_API_SIGNATURE', '')
+PAYPAL_API_ENVIRONMENT = environ.get('PAYPAL_API_ENVIRONMENT', '')
+PAYPAL_APPLICTION_ID = environ.get('PAYPAL_APPLICTION_ID', '')
+PAYPAL_ACTION = environ.get('PAYPAL_ACTION', '')
+PAYPAL_SERVICE = environ.get('PAYPAL_SERVICE', '')
 
 # MAX LENGTH 32 BYTE
-ENCRYPT_KEY = get_env_setting('ENCRYPT_KEY')
+ENCRYPT_KEY = environ.get('ENCRYPT_KEY', 'booking-dev')
 
-TWILIO_ACCOUNT_SID = get_env_setting('TWILIO_ACCOUNT_SID')
-TWILIO_AUTH_TOKEN = get_env_setting('TWILIO_AUTH_TOKEN')
-TWILIO_FROM_NUMBER = get_env_setting('TWILIO_FROM_NUMBER')
+TWILIO_ACCOUNT_SID = environ.get('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = environ.get('TWILIO_AUTH_TOKEN', '')
+TWILIO_FROM_NUMBER = environ.get('TWILIO_FROM_NUMBER', '')
 
 from allauth_settings import *
