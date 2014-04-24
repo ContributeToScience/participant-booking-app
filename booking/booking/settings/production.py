@@ -101,8 +101,8 @@ DATABASES = {
 ########## END DATABASE CONFIGURATION
 
 ALLOWED_HOSTS = [
-    '54.225.90.112',
-    'www.contributetoscience.org',
+    '127.0.0.1',
+    'localhost',
 ]
 
 HAYSTACK_CONNECTIONS = {
