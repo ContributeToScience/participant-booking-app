@@ -11,7 +11,7 @@ django-categories==1.2.1
 #-e git+https://github.com/toastdriven/django-tastypie.git#egg=tastypie
 fabric==1.6.1
 git+https://github.com/jezdez/django-avatar.git#egg=avatar
-PIL==1.1.7
+PILLOW
 django-ses==0.4.1
 django-haystack==2.0.0
 django-celery==3.0.17
