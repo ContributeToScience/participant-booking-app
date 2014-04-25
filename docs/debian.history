@@ -1,0 +1,61 @@
+$ sudo apt-get update
+$ sudo apt-get upgrade
+$ sudo apt-get install wget git gcc python python-dev apache2 mysql-server libmysqlclient-dev libbz2-dev apache2-threaded-dev libapache2-mod-wsgi
+$ wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+$ python get-pip.py
+$ sudo python get-pip.py
+$ sudo pip install virtualenv
+$ git clone https://github.com/ContributeToScience/participant-booking-app.git
+$ cd participant-booking-app/
+$ virtualenv env
+$ source env/bin/activate
+$ pip install -r requirements.txt
+$ gedit /home/jeffrey/.bashrc
+
+    export SECRET_KEY=r"qipu176jbf8661i32p58fyqe&%$P[132u1v"
+    # db configurations
+    export RDS_DB_NAME=booking
+    export RDS_USERNAME=booking
+    export RDS_PASSWORD=password
+    export RDS_HOSTNAME=localhost
+    export RDS_PORT=3306
+
+$ mysql -u root -p
+
+    mysql> CREATE DATABASE booking CHARACTER SET utf8;
+    mysql> GRANT ALL PRIVILEGES ON booking.* TO "booking"@"localhost" IDENTIFIED BY "password";
+    mysql> FLUSH PRIVILEGES;
+    mysql> EXIT;
+
+$ cd booking/
+$ python manage.py syncdb --settings=booking.settings.production
+$ source /home/jeffrey/.bashrc
+$ python manage.py syncdb --settings=booking.settings.production
+$ python manage.py migrate --settings=booking.settings.production
+$ python manage.py loaddata fixtures/*.* --settings=booking.settings.production
+$ mkdir static
+$ python manage.py collectstatic --settings=booking.settings.production
+$ sudo a2enmod wsgi
+$ sudo gedit /etc/apache2/mods-available/wsgi.conf
+
+    #----------Begin----------#
+    SetEnv SECRET_KEY qipu176jbf8661i32p58fyqe&%$P[132u1v
+
+    # db configurations
+    SetEnv RDS_DB_NAME booking
+    SetEnv RDS_USERNAME booking
+    SetEnv RDS_PASSWORD password
+    SetEnv RDS_HOSTNAME localhost
+    SetEnv RDS_PORT 3306
+
+    LoadModule wsgi_module modules/mod_wsgi.so
+    WSGISocketPrefix /var/run/wsgi
+    WSGIDaemonProcess booking python-path=/home/jeffrey/participant-booking-app/env/lib/python2.7/site-packages/
+    WSGIProcessGroup booking
+    WSGIScriptAlias / /home/jeffrey/participant-booking-app/booking/booking/wsgi.py
+    WSGIPassAuthorization On
+    Alias /static/ /home/jeffrey/participant-booking-app/booking/assets/
+    Alias /media/ /home/jeffrey/participant-booking-app/booking/media/
+    #-----------End-----------#
+
+$ sudo service apache2 restart

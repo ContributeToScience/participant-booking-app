@@ -223,7 +223,7 @@ If you get some errors caused by SELinux, you can disable this service.
     SELINUX=disabled
 
 
-Debian 7
+Debian 7c
 --------
 If you account didn't in sudoers, you can ask root user add you with:
 
@@ -244,7 +244,7 @@ If you account didn't in sudoers, you can ask root user add you with:
 
 ::
 
-    sudo apt-get install wget git gcc python python-dev apache2 libapache2-mod-wsgi mysql libmysqlclient-dev libbz2-dev apache2-threaded-dev
+    sudo apt-get install wget git gcc python python-dev apache2 libapache2-mod-wsgi mysql-server libmysqlclient-dev libbz2-dev apache2-threaded-dev make
 
 3. Clone project from github.com
 
@@ -378,8 +378,8 @@ You can edit the ~/.bashrc to export these parameters, for example:
 
     $ sudo service mysql start
     $ mysql -u root -p
-    mysql> CREATE DATABASE <RDS_USERNAME> CHARACTER SET utf8;
-    mysql> GRANT ALL PRIVILEGES ON <RDS_USERNAME>.* TO "<RDS_USERNAME>"@"<RDS_HOSTNAME>" IDENTIFIED BY "<RDS_PASSWORD>";
+    mysql> CREATE DATABASE <RDS_DB_NAME> CHARACTER SET utf8;
+    mysql> GRANT ALL PRIVILEGES ON <RDS_DB_NAME>.* TO "<RDS_USERNAME>"@"<RDS_HOSTNAME>" IDENTIFIED BY "<RDS_PASSWORD>";
     mysql> FLUSH PRIVILEGES;
     mysql> EXIT;
 
