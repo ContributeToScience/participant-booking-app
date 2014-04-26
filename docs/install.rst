@@ -1,7 +1,7 @@
 Install
 =========
 
-Fedora 64
+Fedora 20
 ---------
 
 1. Update your system
@@ -16,7 +16,7 @@ If you're using root account you can avoid sudo, otherwise you need add your acc
 
 ::
 
-    $ sudo yum install wget git gcc python-devel python27 python27-devel httpd httpd-devel mod_wsgi mod_ssl mysql mysql-server mysql-devel -y
+    $ sudo yum install wget git gcc python python-devel httpd httpd-devel mod_wsgi mod_ssl mysql mysql-server mysql-devel -y
 
 3. Clone project from github.com
 
@@ -150,8 +150,8 @@ You can edit the ~/.bashrc to export these parameters, for example:
 
     $ sudo service mysqld start
     $ mysql -u root -p
-    mysql> CREATE DATABASE <RDS_USERNAME> CHARACTER SET utf8;
-    mysql> GRANT ALL PRIVILEGES ON <RDS_USERNAME>.* TO "<RDS_USERNAME>"@"<RDS_HOSTNAME>" IDENTIFIED BY "<RDS_PASSWORD>";
+    mysql> CREATE DATABASE <RDS_DB_NAME> CHARACTER SET utf8;
+    mysql> GRANT ALL PRIVILEGES ON <RDS_DB_NAME>.* TO "<RDS_USERNAME>"@"<RDS_HOSTNAME>" IDENTIFIED BY "<RDS_PASSWORD>";
     mysql> FLUSH PRIVILEGES;
     mysql> EXIT;
 
@@ -182,6 +182,7 @@ Create database and load data
 Collect static files
 
 ::
+    $ mkdir static
 
     $ python manage.py collectstatic --settings=booking.settings.production
 
@@ -214,7 +215,21 @@ Collect static files
     Alias /media/ /home/jeffrey/participant-booking-app/booking/media/
     #-----------End-----------#
 
-If you get some errors caused by SELinux, you can disable this service.
+    sudo vi /etc/httpd/conf/httpd.conf
+
+    # Make sure your account and group has the privilege for your code directory
+    user=your_account_username
+    group=your_group_name
+
+    <Directory />
+        AllowOverride None
+        Order deny,allow
+        Allow from all
+</Directory>
+
+    sudo service httpd restart
+
+If you get some errors caused by SELinux, you can disable this service. You need to restart the server to apply it.
 
 ::
 
